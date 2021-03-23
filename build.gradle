@@ -1,24 +1,5 @@
 plugins {
     id 'java'
-}
-java {
-    modularity.inferModulePath = true
+    id 'idea'
 }
 
-subprojects {
-    java {
-        modularity.inferModulePath = true
-        toolchain {
-            languageVersion.set(JavaLanguageVersion.of(11))
-        }
-    }
-
-    repositories {
-        mavenCentral()
-
-    }
-
-    dependencies {
-
-    }
-}
