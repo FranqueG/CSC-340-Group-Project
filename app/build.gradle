@@ -1,0 +1,16 @@
+plugins {
+    id 'application'
+}
+
+dependencies {
+    implementation project(':api')
+    implementation project(':data')
+    implementation project(':gui')
+}
+java {
+    modularity.inferModulePath = true
+}
+application {
+    mainModule = 'MTG.Deck.Builder.app' // name defined in module-info.java
+    mainClass = 'app.Main'
+}
