@@ -21,6 +21,10 @@ public class SqliteDatabase extends Database {
     private final Connection connection;
     private static Map<String, String> queryCache = new HashMap<>();
 
+    /**
+     * Opens a SQLite database connection
+     * @param _filepath the path to the database file
+     */
     public SqliteDatabase(String _filepath) {
         super();
         try {
@@ -45,6 +49,12 @@ public class SqliteDatabase extends Database {
         }
     }
 
+    /**
+     * Creates a table in the database based on a class
+     * @param _name the name of the table
+     * @param _fields the columns in the table
+     * @throws SQLException if it fails to create the table
+     */
     private void createTable(String _name, Map<String, ColumnData> _fields) throws SQLException {
         String query;
         if (queryCache.containsKey(_name))
