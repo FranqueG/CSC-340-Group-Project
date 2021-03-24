@@ -8,8 +8,19 @@ import java.util.Map;
 
 public abstract class Database {
 
+    /**
+     * Inserts a object into the table
+     * @param _table object representing a table, it's class must be annotated with @Table
+     */
     public abstract void Insert(Object _table);
 
+    /**
+     * Reads a object as a table using reflection
+     * the object read must be annotated @Table
+     * @param _table the object representing a table
+     * @return a map of field names and corresponding column data
+     * @throws IllegalAccessException if something went wrong with reflection
+     */
     protected static Map<String, ColumnData> getColumns(Object _table) throws IllegalAccessException {
         var fields = _table.getClass().getFields();
         var fieldMap = new HashMap<String, ColumnData>();
@@ -33,6 +44,9 @@ public abstract class Database {
         return fieldMap;
     }
 
+    /**
+     * This class holds data about a column in the table
+     */
     protected static class ColumnData {
         private final Object data;
         private final Type type;
