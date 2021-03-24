@@ -3,5 +3,5 @@ module MTG.Deck.Builder.app {
     requires MTG.Deck.Builder.data;
     requires MTG.Deck.Builder.gui;
     requires java.desktop;
-    requires javafx.stage.Stage;
+
 }
