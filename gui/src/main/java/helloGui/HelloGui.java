@@ -1,4 +1,5 @@
 package helloGui;
+import javafx.stage.Stage;
 
 public class HelloGui {
     public static void helloGui() throws Exception {
@@ -11,4 +12,5 @@ public class HelloGui {
 
 
     }
+    Stage stage;
 }

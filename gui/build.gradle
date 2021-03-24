@@ -1,11 +1,14 @@
 plugins {
     id 'java-library'
-    id 'org.openjfx.javafxplugin' version '0.0.9'
 }
-
-javafx {
-    version = "11.0.2"
-    modules = ['javafx.controls', 'javafx.fxml']
+def currentOS = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentOperatingSystem;
+def platform
+if (currentOS.isWindows()) {
+    platform = 'win'
+} else if (currentOS.isLinux()) {
+    platform = 'linux'
+} else if (currentOS.isMacOsX()) {
+    platform = 'mac'
 }
 
 java {
@@ -27,5 +30,8 @@ test {
 }
 dependencies {
     testImplementation group:'org.junit.jupiter', name:'junit-jupiter', version:'5.7.1'
-
+    implementation "org.openjfx:javafx-base:15.0.1:${platform}"
+    implementation "org.openjfx:javafx-controls:15.0.1:${platform}"
+    implementation "org.openjfx:javafx-graphics:15.0.1:${platform}"
+    implementation "org.openjfx:javafx-fxml:15.0.1:${platform}"
 }
