@@ -1,66 +1,54 @@
 package database;
 
 import exported.Column;
-import exported.Table;
-import org.reflections.Reflections;
-import org.reflections.scanners.TypeAnnotationsScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 public abstract class Database {
 
+    public abstract void Insert(Object _table);
 
+    protected static Map<String, ColumnData> getColumns(Object _table) throws IllegalAccessException {
+        var fields = _table.getClass().getFields();
+        var fieldMap = new HashMap<String, ColumnData>();
 
-    protected static HashMap<String, List<ColumnInfo>> getTableData() {
-        var configBuilder = new ConfigurationBuilder();
-        configBuilder.setUrls(ClasspathHelper.forJavaClassPath());
-        configBuilder.setScanners(new TypeAnnotationsScanner());
-        configBuilder.useParallelExecutor();
-
-        var reflections = new Reflections(configBuilder);
-        var classes = reflections.getTypesAnnotatedWith(Table.class);
-
-        var classesFieldsMap = new HashMap<String, List<ColumnInfo>>();
-        for (var tableClass : classes) {
-            var fields = tableClass.getDeclaredFields();
-            var list = new ArrayList<ColumnInfo>();
-            for (var field : fields) {
-                if (field.isAnnotationPresent(Column.class)) {
-                    var annotation = field.getAnnotation(Column.class);
-                    list.add(new ColumnInfo(
-                            field.getName(),
-                            field.getType(),
-                            annotation.notNull(),
-                            annotation.notNull()
-                    ));
-                }
+        for(var field : fields) {
+            var fieldAnnotation = field.getAnnotation(Column.class);
+            if (fieldAnnotation != null) {
+                var fieldName = fieldAnnotation.name();
+                if (fieldName.equals(""))
+                    fieldName = field.getName();
+                var data = new ColumnData(
+                        field.get(_table),
+                        field.getType(),
+                        fieldAnnotation.notNull(),
+                        fieldAnnotation.unique(),
+                        fieldAnnotation.primaryKey()
+                        );
+                fieldMap.put(fieldName,data);
             }
-            classesFieldsMap.put(tableClass.getName(), list);
         }
-        return classesFieldsMap;
+        return fieldMap;
     }
 
-    protected static class ColumnInfo {
-        private final String name;
+    protected static class ColumnData {
+        private final Object data;
         private final Type type;
-        private final boolean notNull;
-        private final boolean unique;
+        private final boolean notNull, unique, primaryKey;
 
-        protected ColumnInfo(String _name, Type _type, boolean _notNull, boolean _unique) {
-            this.name = _name;
+        public ColumnData(Object _data, Type _type, boolean _notNull, boolean _unique, boolean _primaryKey) {
+            this.data = _data;
             this.type = _type;
             this.notNull = _notNull;
             this.unique = _unique;
+            this.primaryKey = _primaryKey;
         }
 
         //=================  GETTERS ===============
-        public String getName() {
-            return name;
+        public Object getData() {
+            return data;
         }
 
         public Type getType() {
@@ -73,6 +61,10 @@ public abstract class Database {
 
         public boolean isUnique() {
             return unique;
+        }
+
+        public boolean isPrimaryKey() {
+            return primaryKey;
         }
     }
 }

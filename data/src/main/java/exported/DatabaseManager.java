@@ -1,16 +1,12 @@
 package exported;
 
 import database.Database;
-import org.reflections.Reflections;
-import org.reflections.scanners.TypeAnnotationsScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
-
-import java.util.Set;
+import database.sqlite.SqliteDatabase;
 
 public class DatabaseManager {
-    private static boolean is_initialized;
     private static Database database;
 
-
+    public static void connectToDatabase(String _filepath) {
+        database = new SqliteDatabase(_filepath);
+    }
 }

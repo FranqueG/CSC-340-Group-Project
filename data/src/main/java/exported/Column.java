@@ -10,4 +10,6 @@ import java.lang.annotation.Target;
 public @interface Column {
     boolean notNull() default false;
     boolean unique() default false;
+    String name() default "";
+    boolean primaryKey() default false;
 }
