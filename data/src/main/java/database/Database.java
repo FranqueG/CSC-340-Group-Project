@@ -12,7 +12,7 @@ public abstract class Database {
      * Inserts a object into the table
      * @param _table object representing a table, it's class must be annotated with @Table
      */
-    public abstract void Insert(Object _table);
+    public abstract void insert(Object _table);
 
     /**
      * Reads a object as a table using reflection

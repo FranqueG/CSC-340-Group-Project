@@ -35,7 +35,7 @@ public class SqliteDatabase extends Database {
     }
 
     @Override
-    public void Insert(Object _table) {
+    public void insert(Object _table) {
         var annotation = _table.getClass().getAnnotation(Table.class);
         if (annotation == null)
             throw new DatabaseError("Attempted to use class that is not a table!");

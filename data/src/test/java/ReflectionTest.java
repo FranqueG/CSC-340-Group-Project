@@ -14,7 +14,7 @@ public class ReflectionTest extends Database {
     }
 
     @Override
-    public void Insert(Object _table) { // Do nothing
+    public void insert(Object _table) { // Do nothing
     }
 
     @Test
