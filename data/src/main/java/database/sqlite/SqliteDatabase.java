@@ -6,9 +6,9 @@ saving and loading data to the disk through it.
 Authors: Joshua Millikan
  */
 
+import annotations.Table;
 import database.Database;
-import exported.DatabaseError;
-import exported.Table;
+import errors.DatabaseError;
 
 import java.lang.reflect.Type;
 import java.sql.Connection;

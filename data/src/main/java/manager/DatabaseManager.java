@@ -1,4 +1,4 @@
-package exported;
+package manager;
 
 import database.Database;
 import database.sqlite.SqliteDatabase;

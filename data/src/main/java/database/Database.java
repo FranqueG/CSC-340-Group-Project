@@ -1,6 +1,6 @@
 package database;
 
-import exported.Column;
+import annotations.Column;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
