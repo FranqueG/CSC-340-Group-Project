@@ -22,12 +22,13 @@ public abstract class Database {
      * @throws IllegalAccessException if something went wrong with reflection
      */
     protected static Map<String, ColumnData> getColumns(Object _table) throws IllegalAccessException {
-        var fields = _table.getClass().getFields();
+        var fields = _table.getClass().getDeclaredFields();
         var fieldMap = new HashMap<String, ColumnData>();
 
         for(var field : fields) {
             var fieldAnnotation = field.getAnnotation(Column.class);
             if (fieldAnnotation != null) {
+                field.setAccessible(true);
                 var fieldName = fieldAnnotation.name();
                 if (fieldName.equals(""))
                     fieldName = field.getName();
