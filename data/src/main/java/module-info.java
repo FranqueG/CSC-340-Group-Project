@@ -1,3 +1,4 @@
 module MTG.Deck.Builder.data {
-    exports helloData;
+    exports exported;
+    requires java.sql;
 }
