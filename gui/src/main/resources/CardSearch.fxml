@@ -51,9 +51,17 @@
       <Button layoutX="215.0" layoutY="497.0" mnemonicParsing="false" text="Add type" />
       <Button layoutX="120.0" layoutY="497.0" mnemonicParsing="false" text="Clear Types" />
       <Button id="FindButton" layoutX="87.0" layoutY="557.0" mnemonicParsing="false" onAction="#changeScreen" prefHeight="53.0" prefWidth="156.0" text="Find Cards Now!" />
-      <Spinner layoutX="90.0" layoutY="35.0" prefHeight="25.0" prefWidth="53.0" />
+      <Spinner id="manaLow" fx:id="manaLow" layoutX="90.0" layoutY="35.0" prefHeight="25.0" prefWidth="53.0">
+       <valueFactory>
+           <SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="1" initialValue="0" max="35" min="0" />
+       </valueFactory>
+   </Spinner>
       <Label layoutX="6.0" layoutY="39.0" text="Mana between:" />
-      <Spinner layoutX="185.0" layoutY="35.0" prefHeight="25.0" prefWidth="62.0" />
+      <Spinner fx:id="manaHigh" layoutX="185.0" layoutY="35.0" prefHeight="25.0" prefWidth="62.0" >
+          <valueFactory>
+              <SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="1" initialValue="30" max="35" min="0" />
+          </valueFactory>
+      </Spinner>
       <Label layoutX="151.0" layoutY="39.0" text=" and" />
    </children>
 </AnchorPane>

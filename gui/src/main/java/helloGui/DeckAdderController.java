@@ -9,6 +9,7 @@ import java.io.IOException;
 public class DeckAdderController {
     public MenuBar MyMenu;
     public ScreenChanger MS = new ScreenChanger();
+
     public void launchDeckViewer(ActionEvent event) throws IOException {
 
         Stage stage = (Stage) MyMenu.getScene().getWindow();
