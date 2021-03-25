@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class SqliteDatabase extends Database {
     private final Connection connection;
-    private static Map<String, String> queryCache = new HashMap<>();
+    private static final Map<String, String> queryCache = new HashMap<>();
 
     /**
      * Opens a SQLite database connection
