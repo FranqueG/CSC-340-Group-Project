@@ -25,15 +25,15 @@ public class CardViewController {
 
 
 
-    public void launchDeckAdder(ActionEvent event) throws IOException{
+    public void launchDeckAdder() throws IOException{
 
         MS.changeScreenByMenu(MyMenu,"/DeckAdder.fxml");
     }
-    public void launchDeckViewer(ActionEvent event) throws IOException{
+    public void launchDeckViewer() throws IOException{
 
         MS.changeScreenByMenu(MyMenu,"/DeckViewer.fxml");
     }
-    public void launchCardSearch(ActionEvent event) throws IOException{
+    public void launchCardSearch() throws IOException{
 
         MS.changeScreenByMenu(MyMenu,"/CardSearch.fxml");
     }
