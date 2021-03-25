@@ -1,6 +1,6 @@
 package database;
 
-import exported.Column;
+import annotations.Column;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -12,7 +12,7 @@ public abstract class Database {
      * Inserts a object into the table
      * @param _table object representing a table, it's class must be annotated with @Table
      */
-    public abstract void Insert(Object _table);
+    public abstract void insert(Object _table);
 
     /**
      * Reads a object as a table using reflection
@@ -22,12 +22,13 @@ public abstract class Database {
      * @throws IllegalAccessException if something went wrong with reflection
      */
     protected static Map<String, ColumnData> getColumns(Object _table) throws IllegalAccessException {
-        var fields = _table.getClass().getFields();
+        var fields = _table.getClass().getDeclaredFields();
         var fieldMap = new HashMap<String, ColumnData>();
 
         for(var field : fields) {
             var fieldAnnotation = field.getAnnotation(Column.class);
             if (fieldAnnotation != null) {
+                field.setAccessible(true);
                 var fieldName = fieldAnnotation.name();
                 if (fieldName.equals(""))
                     fieldName = field.getName();
