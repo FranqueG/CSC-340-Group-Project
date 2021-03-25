@@ -20,7 +20,7 @@ public class CardSearchController {
     public ScreenChanger MS = new ScreenChanger();
     public Spinner manaLow = new Spinner();
 
-    public void changeScreen(ActionEvent event) throws IOException {
+    public void launchCardView(ActionEvent event) throws IOException {
 
         MS.changeScreen(event,"/CardView.fxml");
 

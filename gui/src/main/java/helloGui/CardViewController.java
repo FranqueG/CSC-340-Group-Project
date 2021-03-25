@@ -23,11 +23,7 @@ public class CardViewController {
 
     }
 
-    public void changeScreen(ActionEvent event) throws IOException {
 
-        MS.changeScreenByMenu(MyMenu,"/CardView.fxml");
-
-    }
 
     public void launchDeckAdder(ActionEvent event) throws IOException{
 
