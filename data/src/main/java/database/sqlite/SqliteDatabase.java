@@ -42,7 +42,9 @@ public class SqliteDatabase extends Database {
         try {
             var fields = Database.getColumns(_table);
             var tableName = annotation.name().equals("") ? _table.getClass().getName() : annotation.name();
-            createTable(tableName,fields);
+            var createSting = createTableString(tableName,fields);
+            var statement = connection.createStatement();
+            statement.execute(createSting);
 
         } catch (IllegalAccessException | SQLException e) {
             throw new DatabaseError("Unable to read field from table object! cause: "+e.getMessage());
@@ -55,10 +57,9 @@ public class SqliteDatabase extends Database {
      * @param _fields the columns in the table
      * @throws SQLException if it fails to create the table
      */
-    private void createTable(String _name, Map<String, ColumnData> _fields) throws SQLException {
-        String query;
+    private static String createTableString(String _name, Map<String, ColumnData> _fields) throws SQLException {
         if (queryCache.containsKey(_name))
-            query = queryCache.get(_name);
+            return queryCache.get(_name);
         else {
             var builder = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
                     .append(_name)
@@ -78,17 +79,36 @@ public class SqliteDatabase extends Database {
                 builder.append(",\n");
             }
             builder.append(");");
-            query = builder.toString();
+            var query = builder.toString();
             queryCache.put(_name, query);
+            return query;
         }
-        var statement = connection.createStatement();
-        statement.execute(query);
+    }
+
+    public static String testCreateQuery(Object _table) {
+        var annotation = _table.getClass().getAnnotation(Table.class);
+        if (annotation == null)
+            throw new DatabaseError("Attempted to use class that is not a table!");
+        try {
+            var fields = Database.getColumns(_table);
+            var tableName = annotation.name().equals("") ? _table.getClass().getName() : annotation.name();
+            return createTableString(tableName,fields);
+        } catch (IllegalAccessException | SQLException e) {
+            throw new DatabaseError("Unable to read field from table object! cause: "+e.getMessage());
+        }
     }
 
 
     private static String convertToSqliteType(Type _type) {
-        //TODO
+        if (_type.equals(Integer.class))
+            return "INTEGER";
+        if (_type.equals(String.class))
+            return "TEXT";
+        if (_type.equals(Double.class) || _type.equals(Float.class))
+            return "REAL";
         return null;
+
+        //todo handle complex things
     }
 
 }
