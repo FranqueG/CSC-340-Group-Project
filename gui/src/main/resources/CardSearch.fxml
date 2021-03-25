@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<AnchorPane prefHeight="631.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="helloGui.CardSearchController">
+   <children>
+      <MenuBar fx:id="MyMenu" layoutY="2.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="My Decks">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#launchDeckViewer" text="View Existing" />
+                  <MenuItem mnemonicParsing="false" onAction="#launchDeckAdder" text="Add New" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Card Searcher">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Launch!" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <ComboBox layoutX="89.0" layoutY="458.0" prefHeight="25.0" prefWidth="191.0" />
+      <Label layoutX="26.0" layoutY="366.0" prefHeight="17.0" prefWidth="62.0" text="Card Types:" />
+      <TextArea layoutX="90.0" layoutY="258.0" prefHeight="25.0" prefWidth="150.0" />
+      <Label layoutX="25.0" layoutY="251.0" prefHeight="43.0" prefWidth="62.0" text="           Title&#10;    contains:" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e5eaee" height="79.0" layoutX="87.0" layoutY="157.0" stroke="BLACK" strokeType="INSIDE" width="156.0" />
+      <CheckBox layoutX="96.0" layoutY="163.0" mnemonicParsing="false" text="Green" />
+      <CheckBox layoutX="96.0" layoutY="186.0" mnemonicParsing="false" text="Red" />
+      <CheckBox layoutX="95.0" layoutY="210.0" mnemonicParsing="false" text="Blue" />
+      <CheckBox layoutX="165.0" layoutY="163.0" mnemonicParsing="false" text="White" />
+      <CheckBox layoutX="165.0" layoutY="188.0" mnemonicParsing="false" text="Black" />
+      <Label layoutX="17.0" layoutY="163.0" text="But exclude &#10;cards with:" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e5eaee" height="79.0" layoutX="87.0" layoutY="67.0" stroke="BLACK" strokeType="INSIDE" width="156.0" />
+      <Label layoutX="14.0" layoutY="67.0" text="  Includes at&#10;least one of:" />
+      <CheckBox layoutX="95.0" layoutY="76.0" mnemonicParsing="false" text="Green" />
+      <CheckBox layoutX="95.0" layoutY="98.0" mnemonicParsing="false" text="Red" />
+      <CheckBox layoutX="95.0" layoutY="122.0" mnemonicParsing="false" text="Blue" />
+      <CheckBox layoutX="165.0" layoutY="76.0" mnemonicParsing="false" text="White" />
+      <CheckBox layoutX="165.0" layoutY="98.0" mnemonicParsing="false" text="Black" />
+      <TextArea layoutX="90.0" layoutY="311.0" prefHeight="25.0" prefWidth="150.0" />
+      <Label layoutX="56.0" layoutY="349.0" />
+      <Label layoutX="26.0" layoutY="313.0" text="Description&#10;    contains:" />
+      <TextArea disable="true" layoutX="89.0" layoutY="366.0" prefHeight="79.0" prefWidth="191.0" />
+      <Button layoutX="215.0" layoutY="497.0" mnemonicParsing="false" text="Add type" />
+      <Button layoutX="120.0" layoutY="497.0" mnemonicParsing="false" text="Clear Types" />
+      <Button id="FindButton" layoutX="87.0" layoutY="557.0" mnemonicParsing="false" onAction="#changeScreen" prefHeight="53.0" prefWidth="156.0" text="Find Cards Now!" />
+      <Spinner layoutX="90.0" layoutY="35.0" prefHeight="25.0" prefWidth="53.0" />
+      <Label layoutX="6.0" layoutY="39.0" text="Mana between:" />
+      <Spinner layoutX="185.0" layoutY="35.0" prefHeight="25.0" prefWidth="62.0" />
+      <Label layoutX="151.0" layoutY="39.0" text=" and" />
+   </children>
+</AnchorPane>
