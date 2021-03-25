@@ -12,13 +12,13 @@ public class DeckAdderController {
 
     public void launchDeckViewer(ActionEvent event) throws IOException {
 
-        Stage stage = (Stage) MyMenu.getScene().getWindow();
-        MS.changeScreenByStage(stage,"/DeckViewer.fxml");
+
+        MS.changeScreenByMenu(MyMenu,"/DeckViewer.fxml");
     }
     public void launchDeckSearcher(ActionEvent event) throws IOException{
 
-        Stage stage = (Stage) MyMenu.getScene().getWindow();
-        MS.changeScreenByStage(stage,"/CardSearch.fxml");
+
+        MS.changeScreenByMenu(MyMenu,"/CardSearch.fxml");
     }
 
 }

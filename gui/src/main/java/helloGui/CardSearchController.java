@@ -25,13 +25,13 @@ public class CardSearchController {
         MS.changeScreen(event,"/CardView.fxml");
 
     }
-    public void launchDeckAdder(ActionEvent event) throws IOException{
+    public void launchDeckAdder() throws IOException{
 
-        Stage stage = (Stage) MyMenu.getScene().getWindow();
-        MS.changeScreenByStage(stage,"/DeckAdder.fxml");
+
+        MS.changeScreenByMenu(MyMenu,"/DeckAdder.fxml");
     }
-    public void launchDeckViewer(ActionEvent event) throws IOException{
+    public void launchDeckViewer() throws IOException{
 
-        Stage stage = (Stage) MyMenu.getScene().getWindow();
-        MS.changeScreenByStage(stage,"/DeckViewer.fxml");
+
+        MS.changeScreenByMenu(MyMenu,"/DeckViewer.fxml");
 }}

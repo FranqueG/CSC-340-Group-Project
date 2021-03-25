@@ -25,26 +25,20 @@ public class CardViewController {
 
     public void changeScreen(ActionEvent event) throws IOException {
 
-        Parent tableViewParent = FXMLLoader.load(getClass().getResource("/CardView.fxml"));
-        Scene tableViewScene = new Scene(tableViewParent);
-        Stage window = (Stage) ((Node)event.getSource()).getScene().getWindow();
-        window.setScene(tableViewScene);
-        window.show();
+        MS.changeScreenByMenu(MyMenu,"/CardView.fxml");
+
     }
 
     public void launchDeckAdder(ActionEvent event) throws IOException{
 
-        Stage stage = (Stage) MyMenu.getScene().getWindow();
-        MS.changeScreenByStage(stage,"/DeckAdder.fxml");
+        MS.changeScreenByMenu(MyMenu,"/DeckAdder.fxml");
     }
     public void launchDeckViewer(ActionEvent event) throws IOException{
 
-        Stage stage = (Stage) MyMenu.getScene().getWindow();
-        MS.changeScreenByStage(stage,"/DeckViewer.fxml");
+        MS.changeScreenByMenu(MyMenu,"/DeckViewer.fxml");
     }
     public void launchCardSearch(ActionEvent event) throws IOException{
 
-        Stage stage = (Stage) MyMenu.getScene().getWindow();
-        MS.changeScreenByStage(stage,"/CardSearch.fxml");
+        MS.changeScreenByMenu(MyMenu,"/CardSearch.fxml");
     }
 }
