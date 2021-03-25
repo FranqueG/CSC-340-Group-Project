@@ -1,5 +1,6 @@
 package events;
 
 
-public interface EventData {
+public abstract class EventData {
+    protected String eventName;
 }

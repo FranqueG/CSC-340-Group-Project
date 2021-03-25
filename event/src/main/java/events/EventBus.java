@@ -30,6 +30,17 @@ public class EventBus {
         ;
     }
 
+    public static void register(Object _obj) {
+        var methods = _obj.getClass().getDeclaredMethods();
+        var foundMethods = new ArrayList<Method>();
+        for (var method : methods) {
+            if (method.getAnnotation(Event.class) != null)
+                foundMethods.add(method);
+        }
+        EventBus.register(_obj, foundMethods);
+
+    }
+
     public static void registerStaticClass(Class<?> _class) {
         var methods = _class.getDeclaredMethods();
 

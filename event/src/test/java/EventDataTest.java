@@ -1,13 +1,12 @@
 import annotations.Event;
 import events.EventBus;
 import events.EventData;
-import events.IEventReceiver;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class EventDataTest {
 
-    private static class TestClass implements IEventReceiver {
+    private static class TestClass {
         protected boolean worked = false;
 
         @Event(name = "test")
@@ -16,15 +15,17 @@ public class EventDataTest {
         }
     }
 
-    private static class TestEventData implements EventData {
-
+    private static class TestEventData extends EventData {
+        public TestEventData() {
+            this.eventName = "test";
+        }
     }
 
     @Test
     @DisplayName("Event system test")
     public void test() {
         var testObj = new TestClass();
-        testObj.register();
+        EventBus.register(testObj);
         var event = new TestEventData();
         EventBus.broadcastEvent(event);
     }
