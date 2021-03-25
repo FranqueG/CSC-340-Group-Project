@@ -33,6 +33,6 @@
       <Label layoutX="69.0" layoutY="122.0" text="Rule Set" />
       <Button layoutX="201.0" layoutY="157.0" mnemonicParsing="false" text="Add Now!" />
       <Button layoutX="358.0" layoutY="352.0" mnemonicParsing="false" text="Delete Deck" />
-      <Button layoutX="486.0" layoutY="352.0" mnemonicParsing="false" text="View Details" />
+      <Button layoutX="486.0" layoutY="352.0" mnemonicParsing="false" onAction="#launchDeckViewer" text="View Details" />
    </children>
 </AnchorPane>

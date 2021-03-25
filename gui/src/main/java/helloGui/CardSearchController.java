@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.Spinner;
 import javafx.stage.Stage;
 import helloGui.ScreenChanger.*;
 import java.io.IOException;
@@ -17,18 +18,20 @@ public class CardSearchController {
 
     public MenuBar MyMenu;
     public ScreenChanger MS = new ScreenChanger();
-    public void changeScreen(ActionEvent event) throws IOException {
+    public Spinner manaLow = new Spinner();
 
-        MS.changeScreen(event,"/CardView.fxml");
+    public void launchCardView(ActionEvent event) throws IOException {
+
+        MS.changeScreen(event,"/TestP.fxml");
 
     }
-    public void launchDeckAdder(ActionEvent event) throws IOException{
+    public void launchDeckAdder() throws IOException{
 
-        Stage stage = (Stage) MyMenu.getScene().getWindow();
-        MS.changeScreenByStage(stage,"/DeckAdder.fxml");
+
+        MS.changeScreenByMenu(MyMenu,"/DeckAdder.fxml");
     }
-    public void launchDeckViewer(ActionEvent event) throws IOException{
+    public void launchDeckViewer() throws IOException{
 
-        Stage stage = (Stage) MyMenu.getScene().getWindow();
-        MS.changeScreenByStage(stage,"/DeckViewer.fxml");
+
+        MS.changeScreenByMenu(MyMenu,"/DeckViewer.fxml");
 }}
