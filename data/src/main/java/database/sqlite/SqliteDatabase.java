@@ -100,12 +100,20 @@ public class SqliteDatabase extends Database {
     }
 
 
+    /**
+     * Convert a java type to the SQLite data type that will represent it in the database
+     * @param _type the java type to convert
+     * @return string representing the SQLite type
+     */
     private static String convertToSqliteType(Type _type) {
         if (_type.equals(Integer.class) || _type.equals(int.class))
             return "INTEGER";
         if (_type.equals(String.class))
             return "TEXT";
-        if (_type.equals(Double.class) || _type.equals(Float.class))
+        if (_type.equals(Double.class)
+                || _type.equals(Float.class)
+                || _type.equals(float.class)
+                ||_type.equals(double.class))
             return "REAL";
         return null;
 

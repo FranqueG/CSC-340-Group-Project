@@ -31,8 +31,8 @@ public class QueryTest {
     }
 
     @Test
-    @DisplayName("create table query string creation test")
-    public void testQuery() throws SQLException {
+    @DisplayName("creating a table in the database")
+    public void testTableCreation() throws SQLException {
         var tableObject = new TestTable();
         var query = SqliteDatabase.testCreateQuery(tableObject);
         var expected =
