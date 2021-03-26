@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 public class Example extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-        var root = (AnchorPane) FXMLLoader.load(getClass().getResource("/CardSearch.fxml"));
+        var root = (AnchorPane) FXMLLoader.load(getClass().getResource("/TestP.fxml"));
         var scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();

@@ -78,6 +78,7 @@ public class SqliteDatabase extends Database {
                     builder.append("PRIMARY KEY");
                 builder.append(",\n");
             }
+            builder.deleteCharAt(builder.lastIndexOf(","));
             builder.append(");");
             var query = builder.toString();
             queryCache.put(_name, query);
@@ -99,14 +100,32 @@ public class SqliteDatabase extends Database {
     }
 
 
+    /**
+     * Convert a java type to the SQLite data type that will represent it in the database
+     * @param _type the java type to convert
+     * @return string representing the SQLite type
+     */
     private static String convertToSqliteType(Type _type) {
-        if (_type.equals(Integer.class))
-            return "INTEGER";
         if (_type.equals(String.class))
             return "TEXT";
-        if (_type.equals(Double.class) || _type.equals(Float.class))
+        if (_type.equals(Double.class)
+                || _type.equals(Float.class)
+                || _type.equals(float.class)
+                ||_type.equals(double.class))
             return "REAL";
-        return null;
+        if (_type.equals(Integer.class)
+                || _type.equals(int.class)
+                || _type.equals(Long.class)
+                || _type.equals(long.class)
+                || _type.equals(Short.class)
+                || _type.equals(short.class)
+                || _type.equals(Byte.class)
+                || _type.equals(byte.class)
+                || _type.equals(Boolean.class)
+                || _type.equals(boolean.class))
+            return "INTEGER";
+
+        return "";
 
         //todo handle complex things
     }

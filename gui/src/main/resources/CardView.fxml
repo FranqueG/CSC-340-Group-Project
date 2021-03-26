@@ -9,7 +9,7 @@
 
    <Label layoutX="103.0" layoutY="44.0" prefHeight="17.0" prefWidth="48.0" text="Cards" />
    <ImageView id="CardPic" fx:id="CardPic" fitHeight="263.0" fitWidth="176.0" layoutX="262.0" layoutY="61.0" pickOnBounds="true" preserveRatio="true" />
-   <Button layoutX="265.0" layoutY="337.0" mnemonicParsing="false" onAction="#changeScreen" text="Add Card To :" />
+   <Button layoutX="265.0" layoutY="337.0" mnemonicParsing="false" text="Add Card To :" />
    <MenuBar fx:id="MyMenu" layoutY="2.0">
      <menus>
        <Menu mnemonicParsing="false" text="My Decks">
