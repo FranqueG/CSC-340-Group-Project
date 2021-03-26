@@ -125,7 +125,7 @@ public class SqliteDatabase extends Database {
                 || _type.equals(boolean.class))
             return "INTEGER";
 
-        return null;
+        return "";
 
         //todo handle complex things
     }

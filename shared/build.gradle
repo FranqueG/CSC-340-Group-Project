@@ -19,8 +19,8 @@ test {
         events "passed", "skipped", "failed"
     }
 }
+
 dependencies {
     testImplementation group:'org.junit.jupiter', name:'junit-jupiter', version:'5.7.1'
-    implementation project(':shared')
-
+    implementation project(':data')
 }
