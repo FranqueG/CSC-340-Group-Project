@@ -1,40 +1,110 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="helloGui.TestPController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="769.0" prefWidth="1183.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="helloGui.TestPController">
    <children>
-      <TabPane prefHeight="659.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane maxHeight="659.0" maxWidth="600.0" prefHeight="659.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
           <Tab text="My Decks">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="452.0" prefWidth="600.0">
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="803.0" prefWidth="1188.0">
+
                      <children>
-                         <ListView layoutX="348.0" layoutY="76.0" prefHeight="250.0" prefWidth="192.0" />
-                         <ListView layoutX="42.0" layoutY="74.0" prefHeight="207.0" prefWidth="192.0" />
-                         <Label layoutX="117.0" layoutY="49.0" text="Decks" />
-                         <Label layoutX="429.0" layoutY="49.0" text="Cards" />
-                         <Button layoutX="453.0" layoutY="337.0" mnemonicParsing="false" text="Remove Card" />
-                         <Button layoutX="348.0" layoutY="337.0" mnemonicParsing="false" text="Print Details" />
-                         <Label layoutX="42.0" layoutY="303.0" text="Rule Set:" />
-                         <TextField disable="true" layoutX="88.0" layoutY="299.0" />
-                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e5eaee" height="134.0" layoutX="42.0" layoutY="454.0" stroke="BLACK" strokeType="INSIDE" width="192.0" />
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="25.0" layoutX="42.0" layoutY="453.0" stroke="BLACK" strokeType="INSIDE" width="192.0" />
-                        <Label layoutX="51.0" layoutY="457.0" text="Add New Deck" />
-                        <Label layoutX="62.0" layoutY="491.0" prefHeight="18.0" prefWidth="37.0" text="Name:" />
-                        <Label layoutX="51.0" layoutY="523.0" text="Rule Set:" />
-                        <TextField layoutX="98.0" layoutY="488.0" prefHeight="26.0" prefWidth="129.0" />
-                        <ComboBox layoutX="100.0" layoutY="519.0" prefHeight="26.0" prefWidth="126.0" />
-                        <Button layoutX="187.0" layoutY="552.0" mnemonicParsing="false" text="Add" />
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e5eaee" height="93.0" layoutX="41.0" layoutY="341.0" stroke="BLACK" strokeType="INSIDE" width="193.0" />
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="26.0" layoutX="41.0" layoutY="337.0" stroke="BLACK" strokeType="INSIDE" width="193.0" />
-                        <Label layoutX="51.0" layoutY="342.0" text="Delete Deck" />
+
+                         <ImageView fitHeight="745.0" fitWidth="1189.0" layoutX="-4.0" pickOnBounds="true" preserveRatio="true" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="45.0" layoutX="14.0" layoutY="384.0" stroke="BLACK" strokeType="INSIDE" width="298.0" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="200.0" layoutX="14.0" layoutY="229.0" stroke="BLACK" strokeType="INSIDE" width="297.0" />
+                        <ImageView fx:id="BGImageView" fitHeight="767.0" fitWidth="1189.0" layoutX="-4.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@pics/MTGBackGround.jpg" />
+                           </image></ImageView>
+
+
+                         <ListView layoutX="364.0" layoutY="74.0" prefHeight="493.0" prefWidth="296.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding></ListView>
+                         <ListView layoutX="15.0" layoutY="35.0" prefHeight="350.0" prefWidth="296.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding></ListView>
+                         <Label layoutX="485.0" layoutY="-6.0" prefHeight="38.0" prefWidth="97.0" text="Cards" textAlignment="CENTER">
+                           <font>
+                              <Font size="18.0" />
+                           </font></Label>
+                         <Button layoutX="781.0" layoutY="578.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="144.0" text="Remove Card">
+                           <font>
+                              <Font size="18.0" />
+                           </font></Button>
+                         <Button layoutX="432.0" layoutY="578.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="143.0" text="Print Details">
+                           <font>
+                              <Font size="18.0" />
+                           </font></Button>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="43.0" layoutX="363.0" layoutY="32.0" stroke="BLACK" strokeType="INSIDE" width="297.0" />
+                         <Label alignment="CENTER" layoutX="369.0" layoutY="39.0" prefHeight="27.0" prefWidth="282.0" text="Rule Set: EDH">
+                           <font>
+                              <Font size="18.0" />
+                           </font></Label>
+                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e5eaee" height="167.0" layoutX="15.0" layoutY="550.0" stroke="BLACK" strokeType="INSIDE" width="295.0" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="29.0" layoutX="15.0" layoutY="549.0" stroke="BLACK" strokeType="INSIDE" width="295.0" />
+                        <Label layoutX="101.0" layoutY="550.0" prefHeight="27.0" prefWidth="123.0" text="Add New Deck">
+                           <font>
+                              <Font size="18.0" />
+                           </font></Label>
+                        <Label layoutX="44.0" layoutY="587.0" prefHeight="27.0" prefWidth="61.0" text="Name:">
+                           <font>
+                              <Font size="18.0" />
+                           </font></Label>
+                        <Label layoutX="27.0" layoutY="625.0" prefHeight="40.0" prefWidth="75.0" text="Rule Set:">
+                           <font>
+                              <Font size="18.0" />
+                           </font></Label>
+                        <TextField layoutX="104.0" layoutY="581.0" prefHeight="39.0" prefWidth="194.0">
+                           <font>
+                              <Font size="18.0" />
+                           </font></TextField>
+                        <ComboBox layoutX="105.0" layoutY="623.0" prefHeight="43.0" prefWidth="193.0" />
+                        <Button layoutX="243.0" layoutY="673.0" mnemonicParsing="false" text="Add">
+                           <font>
+                              <Font size="18.0" />
+                           </font></Button>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e5eaee" height="125.0" layoutX="16.0" layoutY="407.0" stroke="BLACK" strokeType="INSIDE" width="293.0" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="29.0" layoutX="16.0" layoutY="407.0" stroke="BLACK" strokeType="INSIDE" width="293.0" />
+                        <Label layoutX="102.0" layoutY="407.0" prefHeight="21.0" prefWidth="138.0" text="Delete Deck">
+                           <font>
+                              <Font size="18.0" />
+                           </font></Label>
                         <Label layoutX="48.0" layoutY="369.0" />
-                        <Label layoutX="51.0" layoutY="369.0" text="Deck:" />
-                        <ComboBox layoutX="87.0" layoutY="365.0" prefHeight="26.0" prefWidth="139.0" />
-                        <Button layoutX="175.0" layoutY="398.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="Delete" />
+                        <Label layoutX="26.0" layoutY="451.0" text="Deck:">
+                           <font>
+                              <Font size="18.0" />
+                           </font></Label>
+                        <ComboBox layoutX="76.0" layoutY="447.0" prefHeight="35.0" prefWidth="220.0" />
+                        <Button layoutX="190.0" layoutY="487.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="105.0" text="Delete">
+                           <font>
+                              <Font size="18.0" />
+                           </font></Button>
+                        <ImageView fitHeight="430.0" fitWidth="318.0" layoutX="699.0" layoutY="132.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@pics/CreepyDoll.jpg" />
+                           </image></ImageView>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="29.0" layoutX="15.0" layoutY="6.0" stroke="BLACK" strokeType="INSIDE" width="296.0" />
+                         <Label layoutX="140.0" layoutY="7.0" prefHeight="11.0" prefWidth="91.0" text="Decks" textAlignment="CENTER">
+                           <font>
+                              <Font size="18.0" />
+                           </font></Label>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="29.0" layoutX="363.0" layoutY="6.0" stroke="BLACK" strokeType="INSIDE" width="297.0" />
+                        <Label layoutX="484.0" layoutY="7.0" prefHeight="27.0" prefWidth="55.0" text="Cards">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
 
                      </children></AnchorPane>
             </content>
