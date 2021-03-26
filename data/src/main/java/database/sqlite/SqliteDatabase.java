@@ -78,6 +78,7 @@ public class SqliteDatabase extends Database {
                     builder.append("PRIMARY KEY");
                 builder.append(",\n");
             }
+            builder.deleteCharAt(builder.lastIndexOf(","));
             builder.append(");");
             var query = builder.toString();
             queryCache.put(_name, query);
@@ -100,7 +101,7 @@ public class SqliteDatabase extends Database {
 
 
     private static String convertToSqliteType(Type _type) {
-        if (_type.equals(Integer.class))
+        if (_type.equals(Integer.class) || _type.equals(int.class))
             return "INTEGER";
         if (_type.equals(String.class))
             return "TEXT";
