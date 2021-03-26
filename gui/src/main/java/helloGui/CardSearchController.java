@@ -22,7 +22,7 @@ public class CardSearchController {
 
     public void launchCardView(ActionEvent event) throws IOException {
 
-        MS.changeScreen(event,"/TestP.fxml");
+        MS.changeScreen(event,"/CardView.fxml");
 
     }
     public void launchDeckAdder() throws IOException{
