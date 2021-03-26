@@ -43,8 +43,7 @@ public class QueryTest {
         assert (query.equals(expected));
         var statement = db.createStatement();
         statement.execute(query);
-        statement.close();
-        statement = db.createStatement();
+
         var results = statement.executeQuery(
                 "SELECT " +
                         "name" +

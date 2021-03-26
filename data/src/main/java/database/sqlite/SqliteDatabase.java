@@ -106,8 +106,6 @@ public class SqliteDatabase extends Database {
      * @return string representing the SQLite type
      */
     private static String convertToSqliteType(Type _type) {
-        if (_type.equals(Integer.class) || _type.equals(int.class))
-            return "INTEGER";
         if (_type.equals(String.class))
             return "TEXT";
         if (_type.equals(Double.class)
@@ -115,6 +113,18 @@ public class SqliteDatabase extends Database {
                 || _type.equals(float.class)
                 ||_type.equals(double.class))
             return "REAL";
+        if (_type.equals(Integer.class)
+                || _type.equals(int.class)
+                || _type.equals(Long.class)
+                || _type.equals(long.class)
+                || _type.equals(Short.class)
+                || _type.equals(short.class)
+                || _type.equals(Byte.class)
+                || _type.equals(byte.class)
+                || _type.equals(Boolean.class)
+                || _type.equals(boolean.class))
+            return "INTEGER";
+
         return null;
 
         //todo handle complex things
