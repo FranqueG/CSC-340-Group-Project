@@ -6,6 +6,7 @@ This class manages access to the database
 
 import database.Database;
 import database.sqlite.SqliteDatabase;
+import errors.DatabaseError;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,16 +33,16 @@ public class DatabaseManager {
 
     static {
         objectQueue = new ConcurrentLinkedDeque<>();
-        Thread writerThread = new Thread(() -> {
+        new Thread(() -> {
             try {
                 synchronized (monitor) {monitor.wait();}
+                if(database == null)
+                    throw new DatabaseError("Attempted insert into database which had not been initialized");
                 for (var obj : objectQueue)
                     database.insert(obj);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        });
-        writerThread.start();
+        }).start();
     }
-
 }

@@ -1,13 +1,14 @@
 package helloApi;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import shared.Card;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import org.json.JSONObject;
-import org.json.JSONArray;
 import java.util.ArrayList;
-import helloApi.*;
 
 public class HelloApi {
     public static void helloApi() {
@@ -154,7 +155,7 @@ public class HelloApi {
      *
      * @param _name
      * @param _description
-     * @param _type
+     * @param _types
      * @param _color
      * @param _minCMC
      * @param _maxCMC
