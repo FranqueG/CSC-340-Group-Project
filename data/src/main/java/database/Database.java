@@ -3,20 +3,53 @@ package database;
 import annotations.Column;
 
 import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
-public abstract class Database {
+public abstract class Database implements Runnable {
+    private final Object monitor = new Object();
+    private final ConcurrentLinkedDeque<Object> insertionQueue = new ConcurrentLinkedDeque<>();
+
+    public void saveObject(Collection<Object> _objects) {
+        insertionQueue.addAll(_objects);
+        synchronized (monitor) {
+            monitor.notify();
+        }
+    }
+
+    public void saveObject(Object _obj) {
+        saveObject(Collections.singletonList(_obj));
+    }
+
+    @Override
+    public void run() {
+        try {
+            while (true) {
+                synchronized (monitor) {
+                    monitor.wait();
+                }
+                while (!insertionQueue.isEmpty())
+                    saveObject(insertionQueue.poll());
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Inserts a object into the table
+     *
      * @param _table object representing a table, it's class must be annotated with @Table
      */
-    public abstract void insert(Object _table);
+    protected abstract void updateInsert(Object _table);
 
     /**
      * Reads a object as a table using reflection
      * the object read must be annotated @Table
+     *
      * @param _table the object representing a table
      * @return a map of field names and corresponding column data
      * @throws IllegalAccessException if something went wrong with reflection
@@ -25,7 +58,7 @@ public abstract class Database {
         var fields = _table.getClass().getDeclaredFields();
         var fieldMap = new HashMap<String, ColumnData>();
 
-        for(var field : fields) {
+        for (var field : fields) {
             var fieldAnnotation = field.getAnnotation(Column.class);
             if (fieldAnnotation != null) {
                 field.setAccessible(true);
@@ -38,12 +71,13 @@ public abstract class Database {
                         fieldAnnotation.notNull(),
                         fieldAnnotation.unique(),
                         fieldAnnotation.primaryKey()
-                        );
-                fieldMap.put(fieldName,data);
+                );
+                fieldMap.put(fieldName, data);
             }
         }
         return fieldMap;
     }
+
 
     /**
      * This class holds data about a column in the table
