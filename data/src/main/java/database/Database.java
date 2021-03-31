@@ -11,20 +11,20 @@ import java.util.concurrent.Future;
 public abstract class Database {
     private static final ExecutorService pool = Executors.newWorkStealingPool();
 
-    public void saveObject(Collection<Object> _objects) {
+    public <T> void saveObjects(Collection<T> _objects) {
         pool.execute(() -> {
-            for(var obj : _objects)
+            for(Object obj : _objects)
                 updateInsert(obj);
         });
     }
 
     public void saveObject(Object _obj) {
-        saveObject(Collections.singletonList(_obj));
+        saveObjects(Collections.singletonList(_obj));
     }
 
-    public ArrayList<Future<List<Object>>> loadObject(Collection<Object> _obj) {
+    public <T> ArrayList<Future<List<Object>>> loadObjects(Collection<T> _obj) {
         var ls = new ArrayList<Future<List<Object>>>();
-        for (var object : _obj) {
+        for (Object object : _obj) {
             var future = pool.submit(() -> selectFromDatabase(object));
             ls.add(future);
         }

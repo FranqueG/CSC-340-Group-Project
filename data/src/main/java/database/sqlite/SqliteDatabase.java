@@ -24,14 +24,15 @@ public class SqliteDatabase extends Database {
 
     /**
      * Opens a SQLite database connection
+     *
      * @param _filepath the path to the database file
      */
     public SqliteDatabase(String _filepath) {
         super();
         try {
-            this.connection = DriverManager.getConnection("jdbc:sqlite:"+_filepath);
+            this.connection = DriverManager.getConnection("jdbc:sqlite:" + _filepath);
         } catch (SQLException e) {
-            throw new DatabaseError("Failed to establish connection to database! cause: "+e.getMessage());
+            throw new DatabaseError("Failed to establish connection to database! cause: " + e.getMessage());
         }
     }
 
@@ -49,18 +50,41 @@ public class SqliteDatabase extends Database {
         try {
             var fields = Database.getColumns(_table);
             var tableName = annotation.name().equals("") ? _table.getClass().getName() : annotation.name();
-            var createSting = createTableString(tableName,fields);
+            var createSting = createTableString(tableName, fields);
             var statement = connection.createStatement();
             statement.execute(createSting);
 
+            var insertString = createInsertString(tableName, fields);
+            var preparedStatement = connection.prepareStatement(insertString);
+
         } catch (IllegalAccessException | SQLException e) {
-            throw new DatabaseError("Unable to read field from table object! cause: "+e.getMessage());
+            throw new DatabaseError("Unable to read field from table object! cause: " + e.getMessage());
         }
+    }
+
+    private static String createInsertString(String _tableName, Map<String, ColumnData> _fields) {
+        var builder = new StringBuilder("INSERT INTO ")
+                .append(_tableName)
+                .append(" (");
+        for (var fieldName : _fields.keySet())
+            builder.append(fieldName)
+                    .append(',');
+
+        builder.deleteCharAt(builder.lastIndexOf(","));
+        builder.append(") VALUES (");
+        for (var fieldName : _fields.keySet())
+            builder.append("?,");
+        builder.deleteCharAt(builder.lastIndexOf(","));
+        builder.append(')');
+        builder.append("ON CONFLICT(");
+        // TODO upsert
+        return builder.toString();
     }
 
     /**
      * Creates a table in the database based on a class
-     * @param _name the name of the table
+     *
+     * @param _name   the name of the table
      * @param _fields the columns in the table
      * @throws SQLException if it fails to create the table
      */
@@ -100,15 +124,16 @@ public class SqliteDatabase extends Database {
         try {
             var fields = Database.getColumns(_table);
             var tableName = annotation.name().equals("") ? _table.getClass().getName() : annotation.name();
-            return createTableString(tableName,fields);
+            return createTableString(tableName, fields);
         } catch (IllegalAccessException | SQLException e) {
-            throw new DatabaseError("Unable to read field from table object! cause: "+e.getMessage());
+            throw new DatabaseError("Unable to read field from table object! cause: " + e.getMessage());
         }
     }
 
 
     /**
      * Convert a java type to the SQLite data type that will represent it in the database
+     *
      * @param _type the java type to convert
      * @return string representing the SQLite type
      */
@@ -118,7 +143,7 @@ public class SqliteDatabase extends Database {
         if (_type.equals(Double.class)
                 || _type.equals(Float.class)
                 || _type.equals(float.class)
-                ||_type.equals(double.class))
+                || _type.equals(double.class))
             return "REAL";
         if (_type.equals(Integer.class)
                 || _type.equals(int.class)
