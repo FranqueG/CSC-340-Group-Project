@@ -3,41 +3,44 @@ package database;
 import annotations.Column;
 
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-public abstract class Database implements Runnable {
-    private final Object monitor = new Object();
-    private final ConcurrentLinkedDeque<Object> insertionQueue = new ConcurrentLinkedDeque<>();
+public abstract class Database {
+    private static final ExecutorService pool = Executors.newWorkStealingPool();
 
     public void saveObject(Collection<Object> _objects) {
-        insertionQueue.addAll(_objects);
-        synchronized (monitor) {
-            monitor.notify();
-        }
+        pool.execute(() -> {
+            for(var obj : _objects)
+                updateInsert(obj);
+        });
     }
 
     public void saveObject(Object _obj) {
         saveObject(Collections.singletonList(_obj));
     }
 
-    @Override
-    public void run() {
-        try {
-            while (true) {
-                synchronized (monitor) {
-                    monitor.wait();
-                }
-                while (!insertionQueue.isEmpty())
-                    saveObject(insertionQueue.poll());
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    public ArrayList<Future<List<Object>>> loadObject(Collection<Object> _obj) {
+        var ls = new ArrayList<Future<List<Object>>>();
+        for (var object : _obj) {
+            var future = pool.submit(() -> selectFromDatabase(object));
+            ls.add(future);
         }
+        return ls;
     }
+
+    public Future<List<Object>> loadObject(Object _obj) {
+        return pool.submit(() -> selectFromDatabase(_obj));
+    }
+
+    /**
+     * Retrieves data from the database
+     * @param _obj object to use as a template for the request, each non-null field will be used in the select statment
+     * @return all objects in the database the matched the request
+     */
+    protected abstract List<Object> selectFromDatabase(Object _obj);
 
     /**
      * Inserts a object into the table

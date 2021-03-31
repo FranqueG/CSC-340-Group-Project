@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SqliteDatabase extends Database {
@@ -32,6 +33,12 @@ public class SqliteDatabase extends Database {
         } catch (SQLException e) {
             throw new DatabaseError("Failed to establish connection to database! cause: "+e.getMessage());
         }
+    }
+
+
+    @Override
+    protected List<Object> selectFromDatabase(Object _obj) {
+        return null;
     }
 
     @Override

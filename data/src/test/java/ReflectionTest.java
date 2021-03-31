@@ -4,6 +4,8 @@ import database.Database;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 public class ReflectionTest extends Database {
 
     @SuppressWarnings("FieldMayBeFinal")
@@ -19,6 +21,11 @@ public class ReflectionTest extends Database {
         private int primaryKeyColumn = 1;
 
         private int notColumn = 0;
+    }
+
+    @Override
+    protected List<Object> selectFromDatabase(Object _obj) {
+        return null;
     }
 
     @Override
