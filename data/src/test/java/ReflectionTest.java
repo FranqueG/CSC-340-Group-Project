@@ -29,7 +29,7 @@ public class ReflectionTest extends Database {
     }
 
     @Override
-    public void updateInsert(Object _table) { /* Do nothing */}
+    public int updateInsert(Object _table) { /* Do nothing */return 0;}
 
     @Test
     @DisplayName("Testing ability to read fields in a table class")

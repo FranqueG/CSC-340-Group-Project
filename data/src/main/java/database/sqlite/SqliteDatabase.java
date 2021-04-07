@@ -13,7 +13,9 @@ import errors.DatabaseError;
 import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,14 +38,30 @@ public class SqliteDatabase extends Database {
         }
     }
 
-
     @Override
-    protected List<Object> selectFromDatabase(Object _obj) {
-        return null;
+    protected <T> List<T> selectFromDatabase(T _obj) {
+        var annotation = _obj.getClass().getAnnotation(Table.class);
+        if (annotation == null)
+            throw new DatabaseError("Attempted to use class that is not a table!");
+        try {
+            Map<String, ColumnData> searchFields = new HashMap<>();
+            List<String> resultFields = new ArrayList<>();
+            for (var field : Database.getColumns(_obj).entrySet()) {
+                if (field.getValue() == null)
+                    resultFields.add(field.getKey());
+                else
+                    searchFields.put(field.getKey(), field.getValue());
+            }
+            var statement = connection.createStatement();
+            var result = statement.executeQuery(createSelectString(annotation.name(), searchFields, resultFields));
+            return buildFromResults(result);
+        } catch (IllegalAccessException | SQLException e) {
+            throw new DatabaseError("Unable to read field from table object! cause: " + e.getMessage());
+        }
     }
 
     @Override
-    protected void updateInsert(Object _table) {
+    protected int updateInsert(Object _table) {
         var annotation = _table.getClass().getAnnotation(Table.class);
         if (annotation == null)
             throw new DatabaseError("Attempted to use class that is not a table!");
@@ -54,14 +72,74 @@ public class SqliteDatabase extends Database {
             var statement = connection.createStatement();
             statement.execute(createSting);
 
+            // handle nested tables
+            for (var field : fields.entrySet()) {
+                if (field.getValue().isNestedTable()) {
+                    Integer id = updateInsert(field.getValue().getData());
+                    field.setValue(new ColumnData(
+                       id,
+                       Integer.TYPE,
+                       true,
+                       false,
+                       false,
+                       false,
+                            false));
+                }
+            }
+
             var insertString = createInsertString(tableName, fields);
             var preparedStatement = connection.prepareStatement(insertString);
-
+            int i = 1;
+            for(var field : fields.values()) {
+                preparedStatement.setObject(i,field.getData());
+                i++;
+            }
+            return preparedStatement.executeUpdate();
         } catch (IllegalAccessException | SQLException e) {
             throw new DatabaseError("Unable to read field from table object! cause: " + e.getMessage());
         }
     }
 
+    /**
+     * Create the SQL select statement
+     * @param _tableName name of the table to search
+     * @param _searchFields fields to use as search parameters
+     * @param _resultFields fields to get from the result
+     * @return the SQL query
+     */
+    private static String createSelectString(String _tableName, Map<String, ColumnData> _searchFields, List<String> _resultFields) {
+        var builder = new StringBuilder("SELECT ");
+        for (var field : _resultFields)
+            builder.append(field).append(',');
+        builder.deleteCharAt(builder.lastIndexOf(","));
+        builder.append("FROM ").append(_tableName);
+        if (_searchFields.size() > 0) {
+            builder.append(" WHERE ");
+            for (var field : _searchFields.entrySet()) {
+                builder.append(field.getKey())
+                        .append("=")
+                        .append(field.getValue().getData().toString());
+            }
+        }
+        //todo
+        return builder.toString();
+    }
+
+    /**
+     * Constructs java objects from SQL results
+     * @param _result SQLite query result data
+     * @return list of objects constructed
+     */
+    private static <T> List<T> buildFromResults(ResultSet _result) {
+        return null;//todo
+    }
+
+    /**
+     * Create a SQLite insert query string
+     * @param _tableName the name of the table to insert into
+     * @param _fields the fields to insert
+     * @return the query string
+     */
     private static String createInsertString(String _tableName, Map<String, ColumnData> _fields) {
         var builder = new StringBuilder("INSERT INTO ")
                 .append(_tableName)
@@ -110,13 +188,14 @@ public class SqliteDatabase extends Database {
                 builder.append(",\n");
             }
             builder.deleteCharAt(builder.lastIndexOf(","));
-            builder.append(");");
+            builder.append("); ");
             var query = builder.toString();
             queryCache.put(_name, query);
             return query;
         }
     }
 
+    // test function to make sure query creation works
     public static String testCreateQuery(Object _table) {
         var annotation = _table.getClass().getAnnotation(Table.class);
         if (annotation == null)
@@ -158,8 +237,6 @@ public class SqliteDatabase extends Database {
             return "INTEGER";
 
         return "";
-
-        //todo handle complex things
     }
 
 }
