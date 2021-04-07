@@ -7,6 +7,9 @@ This class manages access to the database
 import database.Database;
 import database.sqlite.SqliteDatabase;
 
+import java.util.List;
+import java.util.concurrent.Future;
+
 public class DatabaseManager {
     private static Database database;
 
@@ -17,5 +20,9 @@ public class DatabaseManager {
 
     public static void saveObject(Object _obj) {
         database.saveObject(_obj);
+    }
+
+    public static <T> Future<List<T>> loadObject(T _obj) {
+        return database.loadObject(_obj);
     }
 }

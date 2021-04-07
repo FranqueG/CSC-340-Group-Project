@@ -1,4 +1,8 @@
 package database;
+/*
+ * This class represents an abstract database connection
+ * Authors: Joshua Millikan
+ */
 
 import annotations.Column;
 import annotations.Table;
@@ -38,9 +42,9 @@ public abstract class Database {
      * @param <T> the object type
      * @return array list of futures that will contain the objects found
      */
-    public <T> ArrayList<Future<List<Object>>> loadObjects(Collection<T> _objs) {
-        var ls = new ArrayList<Future<List<Object>>>();
-        for (Object object : _objs) {
+    public <T> ArrayList<Future<List<T>>> loadObjects(Collection<T> _objs) {
+        var ls = new ArrayList<Future<List<T>>>();
+        for (T object : _objs) {
             var future = pool.submit(() -> selectFromDatabase(object));
             ls.add(future);
         }

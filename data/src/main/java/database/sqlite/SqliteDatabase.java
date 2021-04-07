@@ -11,10 +11,7 @@ import database.Database;
 import errors.DatabaseError;
 
 import java.lang.reflect.Type;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,8 +49,8 @@ public class SqliteDatabase extends Database {
                 else
                     searchFields.put(field.getKey(), field.getValue());
             }
-            var statement = connection.createStatement();
-            var result = statement.executeQuery(createSelectString(annotation.name(), searchFields, resultFields));
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery(createSelectString(annotation.name(), searchFields, resultFields));
             return buildFromResults(result);
         } catch (IllegalAccessException | SQLException e) {
             throw new DatabaseError("Unable to read field from table object! cause: " + e.getMessage());
@@ -67,9 +64,11 @@ public class SqliteDatabase extends Database {
             throw new DatabaseError("Attempted to use class that is not a table!");
         try {
             var fields = Database.getColumns(_table);
-            var tableName = annotation.name().equals("") ? _table.getClass().getName() : annotation.name();
-            var createSting = createTableString(tableName, fields);
-            var statement = connection.createStatement();
+
+            // create the table if it doesn't already exist
+            String tableName = annotation.name().equals("") ? _table.getClass().getName() : annotation.name();
+            String createSting = createTableString(tableName, fields);
+            Statement statement = connection.createStatement();
             statement.execute(createSting);
 
             // handle nested tables
@@ -77,39 +76,78 @@ public class SqliteDatabase extends Database {
                 if (field.getValue().isNestedTable()) {
                     Integer id = updateInsert(field.getValue().getData());
                     field.setValue(new ColumnData(
-                       id,
-                       Integer.TYPE,
-                       true,
-                       false,
-                       false,
-                       false,
+                            id,
+                            Integer.TYPE,
+                            true,
+                            false,
+                            false,
+                            false,
                             false));
                 }
             }
 
-            var insertString = createInsertString(tableName, fields);
-            var preparedStatement = connection.prepareStatement(insertString);
+            // Perform insertion statement
+            String insertString = createInsertString(tableName, fields);
+            PreparedStatement preparedStatement = connection.prepareStatement(insertString);
             int i = 1;
-            for(var field : fields.values()) {
-                preparedStatement.setObject(i,field.getData());
+            for (var field : fields.values()) {
+                preparedStatement.setObject(i, field.getData());
                 i++;
             }
-            return preparedStatement.executeUpdate();
+            int rowId = preparedStatement.executeUpdate();
+            fields.values().forEach((field) -> createList(field,rowId));
+            return rowId;
         } catch (IllegalAccessException | SQLException e) {
             throw new DatabaseError("Unable to read field from table object! cause: " + e.getMessage());
         }
     }
 
     /**
+     * Create a list of objects in the database
+     * @param _listData column containing the list
+     * @param _owningTable owning table rowid
+     */
+    private void createList(ColumnData _listData, int _owningTable) {
+        if (_listData.getData() instanceof List) {
+            List<?> ls = (List<?>) _listData.getData();
+            for (Object element : ls) {
+                try {
+                    var annotation = element.getClass().getAnnotation(Table.class);
+                    if(annotation == null)
+                        throw new DatabaseError("List of non-table objects used as column is invalid");
+
+                    var fields = getColumns(element);
+                    String tableName = annotation.name().equals("") ? element.getClass().getName() : annotation.name();
+                    String tableString = createTableString(tableName, fields);
+                    Statement statement = connection.createStatement();
+                    statement.execute(tableString);
+
+                    var builder = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
+                    builder.append(tableName)
+                            .append("_join_table (" +
+                                    "parent INTEGER NOT NULL," +
+                                    " INTEGER child NOT NULL," +
+                                    " INTEGER count)");
+                    //todo
+                    statement.execute(builder.toString());
+                } catch (IllegalAccessException | SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
      * Create the SQL select statement
-     * @param _tableName name of the table to search
+     *
+     * @param _tableName    name of the table to search
      * @param _searchFields fields to use as search parameters
      * @param _resultFields fields to get from the result
      * @return the SQL query
      */
     private static String createSelectString(String _tableName, Map<String, ColumnData> _searchFields, List<String> _resultFields) {
         var builder = new StringBuilder("SELECT ");
-        for (var field : _resultFields)
+        for (String field : _resultFields)
             builder.append(field).append(',');
         builder.deleteCharAt(builder.lastIndexOf(","));
         builder.append("FROM ").append(_tableName);
@@ -121,12 +159,12 @@ public class SqliteDatabase extends Database {
                         .append(field.getValue().getData().toString());
             }
         }
-        //todo
         return builder.toString();
     }
 
     /**
      * Constructs java objects from SQL results
+     *
      * @param _result SQLite query result data
      * @return list of objects constructed
      */
@@ -136,26 +174,27 @@ public class SqliteDatabase extends Database {
 
     /**
      * Create a SQLite insert query string
+     *
      * @param _tableName the name of the table to insert into
-     * @param _fields the fields to insert
+     * @param _fields    the fields to insert
      * @return the query string
      */
     private static String createInsertString(String _tableName, Map<String, ColumnData> _fields) {
         var builder = new StringBuilder("INSERT INTO ")
                 .append(_tableName)
                 .append(" (");
-        for (var fieldName : _fields.keySet())
+        for (String fieldName : _fields.keySet())
             builder.append(fieldName)
                     .append(',');
 
         builder.deleteCharAt(builder.lastIndexOf(","));
         builder.append(") VALUES (");
-        for (var fieldName : _fields.keySet())
+        for (var ignored : _fields.keySet())
             builder.append("?,");
         builder.deleteCharAt(builder.lastIndexOf(","));
         builder.append(')');
         builder.append("ON CONFLICT(");
-        // TODO upsert
+        // TODO update
         return builder.toString();
     }
 
