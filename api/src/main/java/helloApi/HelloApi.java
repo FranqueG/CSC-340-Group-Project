@@ -150,51 +150,93 @@ public class HelloApi {
     }
 
     /**
-     * constructs a url string based on the user's search preferences
-     * Note: The String _color is in GRUWB format with each letter associating to a color to filter by.
+     * TODO: Possibly update the color string input (GRWUB format to booleans)
+     * Constructs a url string based on the user's search preferences
      *
      * @param _name
-     * @param _description
-     * @param _types
+     * @param _type
      * @param _color
-     * @param _minCMC
      * @param _maxCMC
+     * @param _minCMC
      * @return
      */
-    public static ArrayList advancedSearch(String _name, String _description, ArrayList<String> _types, String _color, int _minCMC, int _maxCMC) {
+    static ArrayList advancedSearch(String _name, String _description, ArrayList<String> _types, String _colors, int _minCMC, int _maxCMC) {
         String callAction = "/cards";
         String secondAction = "/search?q=";
-        String nameString = "";
-        String descriptionString = "%28";
-        String typeString = "%28t%3A";
-        String colorString = "color%3C%3D";
-        String manaString = null;
         String urlString = baseURL + callAction + secondAction;
 
-        // Create array list to dynamically append parameters to the urlString
+        // This array list is used to dynamically append parameters to the urlString
         ArrayList<String> parameters = new ArrayList<>();
+        // Dynamically append each filter to the url parameter list
+        addName(parameters, _name);
+        addDescription(parameters, _description);
+        addTypes(parameters, _types);
+        addColors(parameters, _colors);
+        addMana(parameters, _minCMC, _maxCMC);
 
+        // Construct final urlString from modified parameter list
+        for (int i = 0; i < parameters.size(); i++) {
+            urlString += parameters.get(i);
+            // Append '+' signs between words but not at the end
+            if (i != parameters.size() - 1) {
+                urlString += "+";
+            }
+        }
+
+        // Get filtered card search from the api
+        ArrayList<Card> cards = new ArrayList<>();
+        getCardList(urlString, cards);
+
+        // Return list of cards for later use
+        return cards;
+    }
+
+    /**
+     * Adds the card name field to the list of all url parameters
+     *
+     * @param _params
+     * @param _name
+     */
+    static void addName(ArrayList<String> _parameters, String _name) {
         // Construct nameString for a word-specific search query
         if (_name != null && _name.isEmpty() != true) {
             // Separate string by spaces in search term
+            String nameString = "";
             nameString = separateBySpaces(_name, nameString);
             // Append name string to parameter array list
-            parameters.add(nameString);
+            _parameters.add(nameString);
         }
+    }
 
-        // Construct descriptionString for a word-specific search query
+    /**
+     * Adds the card description field to the list of all url parameters
+     *
+     * @param _parameters
+     * @param _description
+     */
+    static void addDescription(ArrayList<String> _parameters, String _description) {
         if (_description != null && _description.isEmpty() != true) {
             // Separate string by spaces in search term
+            String descriptionString = "%28";
             descriptionString = separateBySpaces(_description, descriptionString, "oracle%3A");
             descriptionString += "%29";
             // Append name string to parameter array list
-            parameters.add(descriptionString);
+            _parameters.add(descriptionString);
         }
+    }
 
+    /**
+     * Adds card types field to url parameter list
+     *
+     * @param _parameters
+     * @param _types
+     */
+    static void addTypes(ArrayList<String> _parameters, ArrayList<String> _types) {
         // Sort through non-empty list of card types that the user selected
         if (_types.isEmpty() != true) {
             // Append parenthesis code
-            String temp = null;
+            String temp;
+            String typeString = "%28t%3A";
             for (int i = 0; i < _types.size(); i++) {
                 // Split string at hyphen
                 temp = _types.get(i);
@@ -207,56 +249,57 @@ public class HelloApi {
             }
             // Append parenthesis code and type string to parameter array list
             typeString += "%29";
-            parameters.add(typeString);
+            _parameters.add(typeString);
         }
-
-        // Construct colorString.
-        if (_color != null && _color.isEmpty() != true) {
-            colorString += _color;
-            parameters.add(colorString);
-        }
-
-        // Construct manaString from given minimum and maximum mana cost
-        if (_maxCMC >= _minCMC) {
-            manaString = "cmc%3C%3D" + _maxCMC + "+cmc%3E%3D" + _minCMC;
-            parameters.add(manaString);
-        }
-
-        // Construct final urlString from modified parameters
-        for (int i = 0; i < parameters.size(); i++) {
-            urlString += parameters.get(i);
-            // Append '+' signs between words but not at the end
-            if (i != parameters.size() - 1) {
-                urlString += "+";
-            }
-        }
-
-        // Get filtered card search from the api
-        ArrayList<Card> cards = getCardList(urlString);
-
-        // Return list of cards for later use
-        return cards;
     }
 
     /**
-     * MODIFIED AT LINE: 290-325 to get more data for card objects (For prototyping) --> Implement Card class
+     * Adds color filter to url parameter list
      *
-     * This method is for requesting json data and putting it into an array list.
-     * It will iterate through every available page of the specific query and put requested cards objects into a list
+     * @param _parameters
+     * @param _color
+     */
+    static void addColors(ArrayList<String> _parameters, String _color) {
+        // Construct colorString. The String _color is in GRUWB format with each letter associating to a color to filter by.
+        if (_color != null && _color.isEmpty() != true) {
+            String colorString = "color%3C%3D";
+            colorString += _color;
+            _parameters.add(colorString);
+        }
+    }
+
+    /**
+     * Adds mana cost range to url parameter list
+     *
+     * @param _parameters
+     * @param _minCMC
+     * @param _maxCMC
+     */
+    static void addMana(ArrayList<String> _parameters, int _minCMC, int _maxCMC) {
+        if (_maxCMC >= _minCMC) {
+            String manaString = "cmc%3C%3D" + _maxCMC + "+cmc%3E%3D" + _minCMC;
+            _parameters.add(manaString);
+        }
+    }
+
+    /**
+     * TODO: Update how this method obtains data from the api (Lines 345-380)
+     *
+     * This method is for requesting json data and putting it into an array
+     * list. It will iterate through every available page of the specific query
      * (page results are limited to 175 entries each)
+     *
+     * @param _cards
      * @param _urlString
      * @return
      */
-    private static ArrayList getCardList(String _urlString) {
+    private static void getCardList(String _urlString, ArrayList<Card> _cards) {
         final String IMAGE_SIZE = "normal";
 
         // Data used to control looping mechanism
         String nextPage = _urlString;
         boolean hasNext = false;
         URL url;
-
-        // Initialize array list to return
-        ArrayList<Card> cards = new ArrayList<>();
 
         // Do-While loop to get all search content to be sorted
         do {
@@ -270,7 +313,11 @@ public class HelloApi {
                 int responseCode = connection.getResponseCode();
 
                 if (responseCode != 200) {
-                    System.out.println("Error: Could not load card information: " + responseCode);
+                    if (responseCode == 404) {
+                        System.out.println("Error: No cards found: " + responseCode);
+                    } else {
+                        System.out.println("Error: Could not load card information: " + responseCode);
+                    }
                 } else {
                     // Parsing input stream into a text string.
                     BufferedReader input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -282,11 +329,12 @@ public class HelloApi {
                     // Close connections.
                     input.close();
                     connection.disconnect();
-
+                    // Print out JSON string.
+                    //System.out.println("Output: " + content.toString());
                     // Parse into JSON object.
                     JSONObject json = new JSONObject(content.toString());
 
-                    // Parse JSONArray for card data
+                    // Put json data into array list of card objects
                     JSONArray array = json.getJSONArray("data");
                     for (int i = 0; i < array.length(); i++) {
                         // Get card data on consistent fields
@@ -326,7 +374,7 @@ public class HelloApi {
                         }
 
                         // Add card object to array list
-                        cards.add(new Card(id, cardName, cardType, manaCost, convertedManaCost, cardText, cardRarity, imageURI));
+                        _cards.add(new Card(id, cardName, cardType, manaCost, convertedManaCost, cardText, cardRarity, imageURI));
 
                         // Get the page link for the next request if it exists
                         if (json.has("next_page")) {
@@ -341,8 +389,6 @@ public class HelloApi {
             }
             // Continue to next page if it exists
         } while (hasNext);
-        // Return the card objects
-        return cards;
     }
 
 
