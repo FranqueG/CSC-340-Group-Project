@@ -1,4 +1,4 @@
-package exported;
+package errors;
 
 public class DatabaseError extends Error {
     public DatabaseError(String _err) {
