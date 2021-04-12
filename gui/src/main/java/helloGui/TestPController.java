@@ -1,11 +1,21 @@
 package helloGui;
 
-import javafx.fxml.Initializable;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 
-import java.io.File;
-import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.ArrayList;
 
-public class TestPController  {}
+public class TestPController  {
+    @FXML
+    private ComboBox<String> box;
+
+    @FXML
+    private void initialize() {
+        var strings = new ArrayList<String>();
+        strings.add("test1");
+        strings.add("test2");
+        strings.add("test3");
+        box.setItems(FXCollections.observableList(strings));
+    }
+}
