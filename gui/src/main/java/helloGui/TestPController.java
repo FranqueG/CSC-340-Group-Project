@@ -13,6 +13,7 @@ import java.util.ArrayList;
 public class TestPController  {
     @FXML
     public ComboBox<String> cardTypeCBox;
+    public ComboBox<String> deckToAddToBox;
     public TextArea typeTxtArea;
     public TextArea nameTxtArea;
     public TextArea descriptionTxtArea;
@@ -73,6 +74,19 @@ public Card Card1 = new Card("","Card1","","",1,"","","");
        searchResultCards.add(Card2);
        resultsListView.setItems(FXCollections.observableList(searchResultCards));
        return searchResultCards;
+   }
+   public void addCardToDeckBtnClick(){
+        String deckName = deckToAddToBox.getValue();
+        String cardName = resultsListView.getSelectionModel().getSelectedItem().toString();
+
+        int x = searchResultCards.size();
+        for (int i = 0; i < x;i++){
+            if (searchResultCards.get(i).toString().equals(cardName)){Card cardToAdd = searchResultCards.get(i); System.out.println("Found it!");}
+        }
+        //insertIntoDatabase(deckName,cardToAdd){stuff to do...}
+        System.out.println("DN: "+deckName);
+        System.out.println("CN: "+cardName);
+
    }
    public String createColorString(){
        String colorString = "";
