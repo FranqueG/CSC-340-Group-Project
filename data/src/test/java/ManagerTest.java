@@ -23,9 +23,9 @@ public class ManagerTest {
 
     @Test
     @DisplayName("Test using insert through manager class")
-    public void TestInsertUsage() {
+    public void testInsertUsage() {
         var testObj = new TestTable();
-        DatabaseManager.insert(testObj);
+        DatabaseManager.saveObject(testObj);
         //todo
     }
 }

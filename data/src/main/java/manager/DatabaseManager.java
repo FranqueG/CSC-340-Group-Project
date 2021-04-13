@@ -6,43 +6,23 @@ This class manages access to the database
 
 import database.Database;
 import database.sqlite.SqliteDatabase;
-import errors.DatabaseError;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.Future;
 
 public class DatabaseManager {
     private static Database database;
-    private static final Object monitor = new Object();
-    private static final ConcurrentLinkedDeque<Object> objectQueue;
 
 
     public static void connectToDatabase(String _filepath) {
         database = new SqliteDatabase(_filepath);
     }
 
-    public static void insert(List<Object> _objects) {
-        objectQueue.addAll(_objects);
-        synchronized (monitor) {monitor.notify();}
+    public static void saveObject(Object _obj) {
+        database.saveObject(_obj);
     }
 
-    public static void insert(Object _obj) {
-        insert(Collections.singletonList(_obj));
-    }
-
-    static {
-        objectQueue = new ConcurrentLinkedDeque<>();
-        new Thread(() -> {
-            try {
-                synchronized (monitor) {monitor.wait();}
-                if(database == null)
-                    throw new DatabaseError("Attempted insert into database which had not been initialized");
-                for (var obj : objectQueue)
-                    database.insert(obj);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
+    public static <T> Future<List<T>> loadObject(T _obj) {
+        return database.loadObject(_obj);
     }
 }

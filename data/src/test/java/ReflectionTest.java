@@ -4,6 +4,8 @@ import database.Database;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 public class ReflectionTest extends Database {
 
     @SuppressWarnings("FieldMayBeFinal")
@@ -22,7 +24,12 @@ public class ReflectionTest extends Database {
     }
 
     @Override
-    public void insert(Object _table) { /* Do nothing */}
+    protected List<Object> selectFromDatabase(Object _obj) {
+        return null;
+    }
+
+    @Override
+    public int updateInsert(Object _table) { /* Do nothing */return 0;}
 
     @Test
     @DisplayName("Testing ability to read fields in a table class")
