@@ -181,7 +181,7 @@ public class HelloApi {
                 urlString += "+";
             }
         }
-
+        System.out.println(urlString);
         // Get filtered card search from the api
         ArrayList<Card> cards = new ArrayList<>();
         getCardList(urlString, cards);

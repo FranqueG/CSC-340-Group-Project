@@ -184,9 +184,9 @@
                         <ComboBox fx:id="deckToAddToBox" layoutX="916.0" layoutY="488.0" prefHeight="42.0" prefWidth="191.0">
                             <items>
                                 <FXCollections fx:factory="observableArrayList">
-                                    <String fx:value="Card1" />
-                                    <String fx:value="Item 2" />
-                                    <String fx:value="Item 3" />
+                                    <String fx:value="Deck 1" />
+                                    <String fx:value="Deck 2" />
+                                    <String fx:value="Deck 3" />
                                 </FXCollections>
                             </items>
                         </ComboBox>

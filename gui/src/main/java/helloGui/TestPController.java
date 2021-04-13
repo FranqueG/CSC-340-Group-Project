@@ -31,6 +31,7 @@ public class TestPController  {
     public static ArrayList<Card> searchResultCards = new ArrayList<>();
     public static ArrayList<String> allCardTypes = getCardTypes();
     public static ArrayList<String> parameterCardTypes = new ArrayList<String>();
+    public static ArrayList<String> pCT= new ArrayList<String>();
     public static String parameterDescription;
     public static String parameterName;
     public static String parameterColors;
@@ -55,28 +56,31 @@ public Card Card1 = new Card("","Card1","","",1,"","","");
 
 
     public void addTypeBtnClick(){
+        //adds a type to search for
        String newType = cardTypeCBox.getValue();
-        parameterCardTypes.add(newType + "\n");
-       typeTxtArea.setText(" "+parameterCardTypes.toString().replaceAll("[ \\[ \\] \\,]"," "));
+        parameterCardTypes.add(newType );
+        pCT.add(newType+ "\n");
+       typeTxtArea.setText(" "+pCT.toString().replaceAll("[ \\[ \\] \\,]"," "));
     }
     public void clearTypeBtnClick(){
-       
+       //resets cardTypes to null
         parameterCardTypes.clear();
+        pCT.clear();
        typeTxtArea.setText(" ");
     }
 
 
-   public ArrayList searchBtnClick() {
+   public void searchBtnClick() {
        parameterDescription = descriptionTxtArea.getText();
        parameterName = nameTxtArea.getText();
        parameterColors = createColorString();
        parameterManaMin = (int) manaLow.getValue();
        parameterManaMax = (int) manaHigh.getValue();
-      // searchResultCards = advancedSearch(parameterName,parameterDescription,parameterCardTypes,parameterColors,parameterManaMin,parameterManaMax);
-       searchResultCards.add(Card1);
-       searchResultCards.add(Card2);
+     
+       searchResultCards = advancedSearch(parameterName,parameterDescription,parameterCardTypes,parameterColors,parameterManaMin,parameterManaMax);
+     
        resultsListView.setItems(FXCollections.observableList(searchResultCards));
-       return searchResultCards;
+       
    }
    public void createNewDeckBtnClick(){
         String deckName = newDeckNameTxtField.getText();
@@ -85,6 +89,7 @@ public Card Card1 = new Card("","Card1","","",1,"","","");
         //insertIntoDatabase(deckName,ruleSet){TODO}
         System.out.println("DN: "+deckName);
         System.out.println("RS: "+ruleSet);
+        
 
    }
     public void addCardToDeckBtnClick(){
