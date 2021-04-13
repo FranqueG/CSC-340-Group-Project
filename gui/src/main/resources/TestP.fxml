@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.collections.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
@@ -7,8 +9,6 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="769.0" prefWidth="1183.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="helloGui.TestPController">
    <children>
       <TabPane maxHeight="659.0" maxWidth="600.0" prefHeight="659.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -63,12 +63,20 @@
                            <font>
                               <Font size="18.0" />
                            </font></Label>
-                        <TextField layoutX="119.0" layoutY="561.0" prefHeight="39.0" prefWidth="194.0">
+                        <TextField fx:id="newDeckNameTxtField" layoutX="119.0" layoutY="561.0" prefHeight="39.0" prefWidth="194.0">
                            <font>
                               <Font size="18.0" />
                            </font></TextField>
-                        <ComboBox fx:id="ruleCBox" layoutX="120.0" layoutY="603.0" prefHeight="43.0" prefWidth="193.0" />
-                        <Button layoutX="258.0" layoutY="653.0" mnemonicParsing="false" text="Add">
+                        <ComboBox fx:id="ruleCBox" layoutX="120.0" layoutY="603.0" prefHeight="43.0" prefWidth="193.0">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Item1" />
+                                    <String fx:value="Item 2" />
+                                    <String fx:value="Item 3" />
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                        <Button fx:id="createNewDeckBtn" layoutX="258.0" layoutY="653.0" mnemonicParsing="false" onAction="#createNewDeckBtnClick" text="Add">
                            <font>
                               <Font size="18.0" />
                            </font></Button>
