@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.collections.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
@@ -61,12 +63,20 @@
                            <font>
                               <Font size="18.0" />
                            </font></Label>
-                        <TextField layoutX="119.0" layoutY="561.0" prefHeight="39.0" prefWidth="194.0">
+                        <TextField fx:id="newDeckNameTxtField" layoutX="119.0" layoutY="561.0" prefHeight="39.0" prefWidth="194.0">
                            <font>
                               <Font size="18.0" />
                            </font></TextField>
-                        <ComboBox fx:id="ruleCBox" layoutX="120.0" layoutY="603.0" prefHeight="43.0" prefWidth="193.0" />
-                        <Button layoutX="258.0" layoutY="653.0" mnemonicParsing="false" text="Add">
+                        <ComboBox fx:id="ruleCBox" layoutX="120.0" layoutY="603.0" prefHeight="43.0" prefWidth="193.0">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Item1" />
+                                    <String fx:value="Item 2" />
+                                    <String fx:value="Item 3" />
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                        <Button fx:id="createNewDeckBtn" layoutX="258.0" layoutY="653.0" mnemonicParsing="false" onAction="#createNewDeckBtnClick" text="Add">
                            <font>
                               <Font size="18.0" />
                            </font></Button>
@@ -166,12 +176,20 @@
                               <Image url="@pics/CreepyDoll.jpg" />
                            </image>
                         </ImageView>
-                        <Button layoutX="787.0" layoutY="488.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="121.0" text="Add card to:">
+                        <Button fx:id="addCardToDeckBtn" layoutX="787.0" layoutY="488.0" mnemonicParsing="false" onAction="#addCardToDeckBtnClick" prefHeight="42.0" prefWidth="121.0" text="Add card to:">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </Button>
-                        <ComboBox layoutX="916.0" layoutY="488.0" prefHeight="42.0" prefWidth="191.0" />
+                        <ComboBox fx:id="deckToAddToBox" layoutX="916.0" layoutY="488.0" prefHeight="42.0" prefWidth="191.0">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Card1" />
+                                    <String fx:value="Item 2" />
+                                    <String fx:value="Item 3" />
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="29.0" layoutX="29.0" layoutY="22.0" stroke="BLACK" strokeType="INSIDE" width="296.0" />
                         <Label alignment="CENTER" layoutX="32.0" layoutY="23.0" prefHeight="27.0" prefWidth="288.0" text="Search Paramters">
                            <font>
