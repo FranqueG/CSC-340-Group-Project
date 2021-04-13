@@ -35,4 +35,7 @@ dependencies {
     implementation "org.openjfx:javafx-graphics:15.0.1:${platform}"
     implementation "org.openjfx:javafx-fxml:15.0.1:${platform}"
     implementation project(':shared')
+    implementation project(':api')
+    implementation project(':data')
+    
 }

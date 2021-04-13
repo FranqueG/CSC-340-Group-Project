@@ -9,7 +9,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-
 public class HelloApi {
     public static void helloApi() {
         System.out.println("Hello from api");
@@ -160,7 +159,7 @@ public class HelloApi {
      * @param _minCMC
      * @return
      */
-    static ArrayList advancedSearch(String _name, String _description, ArrayList<String> _types, String _colors, int _minCMC, int _maxCMC) {
+    public static ArrayList advancedSearch(String _name, String _description, ArrayList<String> _types, String _colors, int _minCMC, int _maxCMC) {
         String callAction = "/cards";
         String secondAction = "/search?q=";
         String urlString = baseURL + callAction + secondAction;
