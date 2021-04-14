@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public abstract class Database {
-    private static final ExecutorService pool = Executors.newWorkStealingPool();
+    private static final ExecutorService pool = Executors.newWorkStealingPool(1);
 
     /**
      * Save a collection of objects to the database
@@ -75,6 +75,12 @@ public abstract class Database {
     protected abstract int updateInsert(Object _table);
 
     /**
+     * Deactivates a record corresponding to the object given
+     * @param _table the object to disable the record for
+     */
+    protected abstract void deactivate(Object _table);
+
+    /**
      * Reads a object as a table using reflection
      * the object read must be annotated @Table
      *
@@ -93,6 +99,7 @@ public abstract class Database {
                 var fieldName = fieldAnnotation.name();
                 if (fieldName.equals(""))
                     fieldName = field.getName();
+
                 boolean nestedTable = field.getType().getAnnotation(Table.class) != null;
                 boolean list = field.getType().isAssignableFrom(List.class);
 
