@@ -52,7 +52,7 @@ public class SqliteDatabase extends Database {
             var statement = connection.prepareStatement(createSelectString(annotation.name(), searchFields, resultFields));
             int i = 0;
             for (var field : searchFields.values())
-                statement.setObject(i++,field.getData());
+                statement.setObject(i++, field.getData());
             ResultSet result = statement.executeQuery();
             return buildFromResults(result);
         } catch (IllegalAccessException | SQLException e) {
@@ -125,7 +125,7 @@ public class SqliteDatabase extends Database {
                 String tableString = createTableString(tableName, fields);
                 Statement statement = connection.createStatement();
                 statement.execute(tableString);
-                statement.execute("DELETE FROM "+tableName+"_join_table WHERE parent="+_owningTable);
+                statement.execute("DELETE FROM " + tableName + "_join_table WHERE parent=" + _owningTable);
 
                 //create join table linking list and the elements
                 String createString = "CREATE TABLE IF NOT EXISTS " + tableName +
@@ -141,7 +141,7 @@ public class SqliteDatabase extends Database {
                     int child = updateInsert(element);
 
                     //update the join tables for the list
-                    var preparedStatement = connection.prepareStatement(createListInsertStatement(tableName+"_join_table"));
+                    var preparedStatement = connection.prepareStatement(createListInsertStatement(tableName + "_join_table"));
                     preparedStatement.setInt(0, _owningTable);
                     preparedStatement.setInt(1, child);
                     preparedStatement.setInt(0, _owningTable);
@@ -158,17 +158,18 @@ public class SqliteDatabase extends Database {
 
     /**
      * Get the string to insert a join table for a list
+     *
      * @param _tableName the join table name
      * @return the query string
      */
     private static String createListInsertStatement(String _tableName) {
         return "CASE WHEN EXISTS(" +
                 "SELECT * FROM  " +
-                _tableName+
-                "WHERE parent=? AND child=?)\n"+
+                _tableName +
+                "WHERE parent=? AND child=?)\n" +
                 "THEN\n UPDATE " +
                 _tableName +
-                " SET count=count+1 WHERE parent=? AND child=?\n"+
+                " SET count=count+1 WHERE parent=? AND child=?\n" +
                 "ELSE\n INSERT INTO " +
                 _tableName +
                 " (parent,child,count) VALUES (?, ?, 1)";
@@ -183,20 +184,29 @@ public class SqliteDatabase extends Database {
      * @return the SQL query
      */
     private static String createSelectString(String _tableName, Map<String, ColumnData> _searchFields, List<String> _resultFields) {
-        var builder = new StringBuilder("SELECT ");
-        for (String field : _resultFields)
-            builder.append(field).append(',');
-        builder.deleteCharAt(builder.lastIndexOf(","));
-        builder.append("FROM ").append(_tableName);
+        var builder = new StringBuilder("SELECT * FROM").append(_tableName);
+        StringBuilder tail = new StringBuilder();
         if (_searchFields.size() > 0) {
             builder.append(" WHERE ");
             for (var field : _searchFields.entrySet()) {
-                builder.append(field.getKey())
-                        .append("=? AND ");
+                if (field.getValue().isList()) {
+                    tail.append(createSelectListString(_tableName, field.getValue()));
+                } else
+                    builder.append(field.getKey())
+                            .append("=? AND ");
             }
-            builder.replace(builder.lastIndexOf("AND"),builder.lastIndexOf("AND")+3,"");
+            builder.replace(builder.lastIndexOf("AND"), builder.lastIndexOf("AND") + 3, " ");
         }
+        builder.append(tail);
         return builder.toString();
+    }
+
+    private static String createSelectListString(String _tableName, ColumnData _field) {
+        List<?> ls = (List<?>) _field.getData();
+        var annotation = ls.get(0).getClass().getAnnotation(Table.class);
+        String listDataName = annotation.name().equals("") ? ls.get(0).getClass().getName() : annotation.name();
+        return "INNER JOIN " + listDataName + "_join_table on " + listDataName + "_join_table.parent = " + _tableName + ".rowid\n"
+                + "INNER JOIN " + listDataName + " on " + listDataName + ".rowid = " + listDataName + "_join_table.child\n";
     }
 
     /**
@@ -230,8 +240,6 @@ public class SqliteDatabase extends Database {
             builder.append("?,");
         builder.deleteCharAt(builder.lastIndexOf(","));
         builder.append(')');
-        builder.append("ON CONFLICT(");
-        // TODO update
         return builder.toString();
     }
 
