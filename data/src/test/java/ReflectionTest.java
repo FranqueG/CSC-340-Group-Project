@@ -31,6 +31,11 @@ public class ReflectionTest extends Database {
     @Override
     public int updateInsert(Object _table) { /* Do nothing */return 0;}
 
+    @Override
+    protected void deactivate(Object _table) {
+        // do nothing
+    }
+
     @Test
     @DisplayName("Testing ability to read fields in a table class")
     public void reflectionTest() throws IllegalAccessException {
@@ -45,7 +50,6 @@ public class ReflectionTest extends Database {
         assert (columns.get("Number").getData().equals(42));
         assert (columns.get("someString").getData().equals("Test"));
         assert (columns.get("primaryKeyColumn").isPrimaryKey());
-
 
     }
 }
