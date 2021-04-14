@@ -21,7 +21,7 @@ public abstract class Database {
      * @param _objects collection of objects
      * @param <T> object type
      */
-    public <T> void saveObjects(Collection<T> _objects) {
+    public final <T> void saveObjects(Collection<T> _objects) {
         pool.execute(() -> {
             for(Object obj : _objects)
                 updateInsert(obj);
@@ -32,7 +32,7 @@ public abstract class Database {
      * Save an object to the database
      * @param _obj object to save
      */
-    public void saveObject(Object _obj) {
+    public final void saveObject(Object _obj) {
         saveObjects(Collections.singletonList(_obj));
     }
 
@@ -42,7 +42,7 @@ public abstract class Database {
      * @param <T> the object type
      * @return array list of futures that will contain the objects found
      */
-    public <T> ArrayList<Future<List<T>>> loadObjects(Collection<T> _objs) {
+    public final <T> ArrayList<Future<List<T>>> loadObjects(Collection<T> _objs) {
         var ls = new ArrayList<Future<List<T>>>();
         for (T object : _objs) {
             var future = pool.submit(() -> selectFromDatabase(object));
@@ -56,7 +56,7 @@ public abstract class Database {
      * @param _obj the object to search for
      * @return future that will contain the list of results
      */
-    public <T> Future<List<T>> loadObject(T _obj) {
+    public final <T> Future<List<T>> loadObject(T _obj) {
         return pool.submit(() -> selectFromDatabase(_obj));
     }
 

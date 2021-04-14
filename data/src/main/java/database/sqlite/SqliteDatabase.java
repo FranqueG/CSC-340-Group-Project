@@ -49,8 +49,11 @@ public class SqliteDatabase extends Database {
                 else
                     searchFields.put(field.getKey(), field.getValue());
             }
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery(createSelectString(annotation.name(), searchFields, resultFields));
+            var statement = connection.prepareStatement(createSelectString(annotation.name(), searchFields, resultFields));
+            int i = 0;
+            for (var field : searchFields.values())
+                statement.setObject(i++,field.getData());
+            ResultSet result = statement.executeQuery();
             return buildFromResults(result);
         } catch (IllegalAccessException | SQLException e) {
             throw new DatabaseError("Unable to read field from table object! cause: " + e.getMessage());
@@ -95,7 +98,7 @@ public class SqliteDatabase extends Database {
                 i++;
             }
             int rowId = preparedStatement.executeUpdate();
-            fields.values().forEach((field) -> createList(field,rowId));
+            fields.values().forEach((field) -> createList(field, rowId));
             return rowId;
         } catch (IllegalAccessException | SQLException e) {
             throw new DatabaseError("Unable to read field from table object! cause: " + e.getMessage());
@@ -104,37 +107,71 @@ public class SqliteDatabase extends Database {
 
     /**
      * Create a list of objects in the database
-     * @param _listData column containing the list
+     *
+     * @param _listData    column containing the list
      * @param _owningTable owning table rowid
      */
     private void createList(ColumnData _listData, int _owningTable) {
         if (_listData.getData() instanceof List) {
             List<?> ls = (List<?>) _listData.getData();
-            for (Object element : ls) {
-                try {
-                    var annotation = element.getClass().getAnnotation(Table.class);
-                    if(annotation == null)
-                        throw new DatabaseError("List of non-table objects used as column is invalid");
+            var firstElement = ls.get(0);
+            var annotation = firstElement.getClass().getAnnotation(Table.class);
+            if (annotation == null)
+                throw new DatabaseError("List of non-table objects used as column");
+            try {
+                //create list objects table
+                var fields = getColumns(firstElement);
+                String tableName = annotation.name().equals("") ? firstElement.getClass().getName() : annotation.name();
+                String tableString = createTableString(tableName, fields);
+                Statement statement = connection.createStatement();
+                statement.execute(tableString);
+                statement.execute("DELETE FROM "+tableName+"_join_table WHERE parent="+_owningTable);
 
-                    var fields = getColumns(element);
-                    String tableName = annotation.name().equals("") ? element.getClass().getName() : annotation.name();
-                    String tableString = createTableString(tableName, fields);
-                    Statement statement = connection.createStatement();
-                    statement.execute(tableString);
+                //create join table linking list and the elements
+                String createString = "CREATE TABLE IF NOT EXISTS " + tableName +
+                        "_join_table (" +
+                        "parent INTEGER NOT NULL," +
+                        " INTEGER child NOT NULL," +
+                        " INTEGER count)";
+                statement.execute(createString);
 
-                    var builder = new StringBuilder("CREATE TABLE IF NOT EXISTS ");
-                    builder.append(tableName)
-                            .append("_join_table (" +
-                                    "parent INTEGER NOT NULL," +
-                                    " INTEGER child NOT NULL," +
-                                    " INTEGER count)");
-                    //todo
-                    statement.execute(builder.toString());
-                } catch (IllegalAccessException | SQLException e) {
-                    e.printStackTrace();
+                for (Object element : ls) {
+
+                    // insert the actual record
+                    int child = updateInsert(element);
+
+                    //update the join tables for the list
+                    var preparedStatement = connection.prepareStatement(createListInsertStatement(tableName+"_join_table"));
+                    preparedStatement.setInt(0, _owningTable);
+                    preparedStatement.setInt(1, child);
+                    preparedStatement.setInt(0, _owningTable);
+                    preparedStatement.setInt(1, child);
+                    preparedStatement.setInt(0, _owningTable);
+                    preparedStatement.setInt(1, child);
+                    preparedStatement.execute();
                 }
+            } catch (SQLException | IllegalAccessException e) {
+                e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Get the string to insert a join table for a list
+     * @param _tableName the join table name
+     * @return the query string
+     */
+    private static String createListInsertStatement(String _tableName) {
+        return "CASE WHEN EXISTS(" +
+                "SELECT * FROM  " +
+                _tableName+
+                "WHERE parent=? AND child=?)\n"+
+                "THEN\n UPDATE " +
+                _tableName +
+                " SET count=count+1 WHERE parent=? AND child=?\n"+
+                "ELSE\n INSERT INTO " +
+                _tableName +
+                " (parent,child,count) VALUES (?, ?, 1)";
     }
 
     /**
@@ -155,9 +192,9 @@ public class SqliteDatabase extends Database {
             builder.append(" WHERE ");
             for (var field : _searchFields.entrySet()) {
                 builder.append(field.getKey())
-                        .append("=")
-                        .append(field.getValue().getData().toString());
+                        .append("=? AND ");
             }
+            builder.replace(builder.lastIndexOf("AND"),builder.lastIndexOf("AND")+3,"");
         }
         return builder.toString();
     }
