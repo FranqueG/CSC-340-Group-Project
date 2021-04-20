@@ -159,7 +159,7 @@ public class HelloApi {
      * @param _minCMC
      * @return
      */
-    public static ArrayList advancedSearch(String _name, String _description, ArrayList<String> _types, String _colors, int _minCMC, int _maxCMC) {
+    public static ArrayList advancedSearch(String _name, String _description, ArrayList<String> _types, String _includeColors, String _excludeColors, int _minCMC, int _maxCMC) {
         String callAction = "/cards/search?q=";
         String urlString = baseURL + callAction;
 
@@ -169,7 +169,7 @@ public class HelloApi {
         addName(parameters, _name);
         addDescription(parameters, _description);
         addTypes(parameters, _types);
-        addColors(parameters, _colors);
+        addColors(parameters, _includeColors, _excludeColors);
         addMana(parameters, _minCMC, _maxCMC);
 
         // Construct final urlString from modified parameter list
@@ -252,16 +252,30 @@ public class HelloApi {
     }
 
     /**
-     * Adds color filter to url parameter list
+     * Adds color filter to url parammeter list
      *
      * @param _parameters
-     * @param _color
+     * @param _includeColor
+     * @param _excludeColor
      */
-    private static void addColors(ArrayList<String> _parameters, String _color) {
-        // Construct colorString. The String _color is in GRUWB format with each letter associating to a color to filter by.
-        if (_color != null && _color.isEmpty() != true) {
+    private static void addColors(ArrayList<String> _parameters, String _includeColor, String _excludeColor) {
+        // Construct colorString. The Strings _color and _excludeColor are in GRUWB format with each letter associating to a color to filter by.
+        if (_includeColor != null && _includeColor.isEmpty() != true) {
             String colorString = "color%3C%3D";
-            colorString += _color;
+            colorString += _includeColor;
+
+            // Add excluded colors if applicable
+            if (_excludeColor != null && _excludeColor.isEmpty() != true) {
+                colorString += "++";
+                char[] ch = _excludeColor.toCharArray();
+
+                for (int i = 0; i < ch.length; i++) {
+                    colorString += "%2Dc%3A" + ch[i];
+                    if (i != ch.length - 1) {
+                        colorString += "+";
+                    }
+                }
+            }
             _parameters.add(colorString);
         }
     }
