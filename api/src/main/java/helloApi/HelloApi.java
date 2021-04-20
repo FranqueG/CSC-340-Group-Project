@@ -196,7 +196,7 @@ public class HelloApi {
      * @param _params
      * @param _name
      */
-    static void addName(ArrayList<String> _parameters, String _name) {
+    private static void addName(ArrayList<String> _parameters, String _name) {
         // Construct nameString for a word-specific search query
         if (_name != null && _name.isEmpty() != true) {
             // Separate string by spaces in search term
@@ -213,7 +213,7 @@ public class HelloApi {
      * @param _parameters
      * @param _description
      */
-    static void addDescription(ArrayList<String> _parameters, String _description) {
+    private static void addDescription(ArrayList<String> _parameters, String _description) {
         if (_description != null && _description.isEmpty() != true) {
             // Separate string by spaces in search term
             String descriptionString = "%28";
@@ -230,7 +230,7 @@ public class HelloApi {
      * @param _parameters
      * @param _types
      */
-    static void addTypes(ArrayList<String> _parameters, ArrayList<String> _types) {
+    private void addTypes(ArrayList<String> _parameters, ArrayList<String> _types) {
         // Sort through non-empty list of card types that the user selected
         if (_types.isEmpty() != true) {
             // Append parenthesis code
@@ -258,7 +258,7 @@ public class HelloApi {
      * @param _parameters
      * @param _color
      */
-    static void addColors(ArrayList<String> _parameters, String _color) {
+    private void addColors(ArrayList<String> _parameters, String _color) {
         // Construct colorString. The String _color is in GRUWB format with each letter associating to a color to filter by.
         if (_color != null && _color.isEmpty() != true) {
             String colorString = "color%3C%3D";
@@ -274,7 +274,7 @@ public class HelloApi {
      * @param _minCMC
      * @param _maxCMC
      */
-    static void addMana(ArrayList<String> _parameters, int _minCMC, int _maxCMC) {
+    private void addMana(ArrayList<String> _parameters, int _minCMC, int _maxCMC) {
         if (_maxCMC >= _minCMC) {
             String manaString = "cmc%3C%3D" + _maxCMC + "+cmc%3E%3D" + _minCMC;
             _parameters.add(manaString);
