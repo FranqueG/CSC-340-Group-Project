@@ -160,9 +160,8 @@ public class HelloApi {
      * @return
      */
     public static ArrayList advancedSearch(String _name, String _description, ArrayList<String> _types, String _colors, int _minCMC, int _maxCMC) {
-        String callAction = "/cards";
-        String secondAction = "/search?q=";
-        String urlString = baseURL + callAction + secondAction;
+        String callAction = "/cards/search?q=";
+        String urlString = baseURL + callAction;
 
         // This array list is used to dynamically append parameters to the urlString
         ArrayList<String> parameters = new ArrayList<>();
