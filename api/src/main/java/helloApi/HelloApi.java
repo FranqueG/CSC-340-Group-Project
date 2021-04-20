@@ -229,7 +229,7 @@ public class HelloApi {
      * @param _parameters
      * @param _types
      */
-    private void addTypes(ArrayList<String> _parameters, ArrayList<String> _types) {
+    private static void addTypes(ArrayList<String> _parameters, ArrayList<String> _types) {
         // Sort through non-empty list of card types that the user selected
         if (_types.isEmpty() != true) {
             // Append parenthesis code
@@ -257,7 +257,7 @@ public class HelloApi {
      * @param _parameters
      * @param _color
      */
-    private void addColors(ArrayList<String> _parameters, String _color) {
+    private static void addColors(ArrayList<String> _parameters, String _color) {
         // Construct colorString. The String _color is in GRUWB format with each letter associating to a color to filter by.
         if (_color != null && _color.isEmpty() != true) {
             String colorString = "color%3C%3D";
@@ -273,7 +273,7 @@ public class HelloApi {
      * @param _minCMC
      * @param _maxCMC
      */
-    private void addMana(ArrayList<String> _parameters, int _minCMC, int _maxCMC) {
+    private static void addMana(ArrayList<String> _parameters, int _minCMC, int _maxCMC) {
         if (_maxCMC >= _minCMC) {
             String manaString = "cmc%3C%3D" + _maxCMC + "+cmc%3E%3D" + _minCMC;
             _parameters.add(manaString);
