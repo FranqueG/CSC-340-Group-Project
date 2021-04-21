@@ -22,10 +22,10 @@ public abstract class Database {
      * @param <T> object type
      */
     public final <T> void saveObjects(Collection<T> _objects) {
-        pool.execute(() -> {
+        //pool.execute(() -> {
             for(Object obj : _objects)
                 updateInsert(obj);
-        });
+        //});
     }
 
     /**
@@ -72,7 +72,7 @@ public abstract class Database {
      *
      * @param _table object representing a table, it's class must be annotated with @Table
      */
-    protected abstract int updateInsert(Object _table);
+    protected abstract long updateInsert(Object _table);
 
     /**
      * Deactivates a record corresponding to the object given
@@ -101,10 +101,13 @@ public abstract class Database {
                     fieldName = field.getName();
 
                 boolean nestedTable = field.getType().getAnnotation(Table.class) != null;
-                boolean list = field.getType().isAssignableFrom(List.class);
-
+                var obj = field.get(_table);
+                boolean list = false;
+                if (obj != null) {
+                    list = List.class.isAssignableFrom(obj.getClass());
+                }
                 var data = new ColumnData(
-                        field.get(_table),
+                        obj,
                         field.getType(),
                         fieldAnnotation.notNull(),
                         fieldAnnotation.unique(),

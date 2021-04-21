@@ -29,7 +29,7 @@ public class ReflectionTest extends Database {
     }
 
     @Override
-    public int updateInsert(Object _table) { /* Do nothing */return 0;}
+    public long updateInsert(Object _table) { /* Do nothing */return 0;}
 
     @Override
     protected void deactivate(Object _table) {
