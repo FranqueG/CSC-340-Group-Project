@@ -41,23 +41,34 @@ public class TestPController  {
     public Button addTypeBtn;
     public Button clearTypeBtn;
     public Button createNewDeckBtn;
+    // These checkBoxes are for inclusion colors
     public CheckBox greenY;
     public CheckBox whiteY;
     public CheckBox blackY;
     public CheckBox blueY;
     public CheckBox redY;
     public ListView resultsListView;
+    // searchResultCards is an ArrayList of card results from the API
     public static ArrayList<Card> searchResultCards = new ArrayList<>();
+    // allCardTypes is an ArrayList of types for the user to choose from
     public static ArrayList<String> allCardTypes = getCardTypes();
+    // parameterCardTypes is an ArrayList formatted to display to the user
     public static ArrayList<String> parameterCardTypes = new ArrayList<String>();
+    //pCT is an Arraylist formatted to work with the API
     public static ArrayList<String> pCT= new ArrayList<String>();
+    //these are variables to store parameters to send to the API
+    public static int parameterManaMin;
+    public static int parameterManaMax;
     public static String parameterDescription;
     public static String parameterName;
     public static String parameterColors;
+
+
     public Spinner manaLow;
     public Spinner manaHigh;
-    public static int parameterManaMin;
-    public static int parameterManaMax;
+
+
+    // these are dummy cards... Card1 is used to return null values...
     public Card Card1 = new Card("","Card1","","",1,"","","");
     public Card Card2 = new Card("","Card2","","",1,"","","");
 
