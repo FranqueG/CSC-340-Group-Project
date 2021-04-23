@@ -224,10 +224,14 @@ public class SqliteDatabase extends Database {
                         if (annotation != null) {
                             String fieldName = annotation.name().equals("") ? field.getName() : annotation.name();
                             field.setAccessible(true);
-                            try {
-                                field.set(obj, _result.getObject(fieldName));
-                            } catch (SQLException e) {
-                                e.printStackTrace();
+                            if (List.class.isAssignableFrom(field.getType()))
+                                field.set(obj,buildListFromResults(_result));
+                            else {
+                                try {
+                                    field.set(obj, _result.getObject(fieldName));
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }
@@ -240,6 +244,11 @@ public class SqliteDatabase extends Database {
             e.printStackTrace();
         }
         return ls;
+    }
+
+    private static <T> List<T> buildListFromResults(ResultSet _results) {
+        //todo
+        return null;
     }
 
     /**
