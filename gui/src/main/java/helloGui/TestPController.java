@@ -3,15 +3,34 @@ package helloGui;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import shared.Card;
 
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
+
 import static helloApi.HelloApi.getCardTypes;
 import static helloApi.HelloApi.advancedSearch;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 public class TestPController  {
     @FXML
+    public ImageView SearchPic;
     public ComboBox<String> cardTypeCBox;
     public ComboBox<String> deckToAddToBox;
     public ComboBox<String> ruleCBox;
@@ -39,7 +58,7 @@ public class TestPController  {
     public Spinner manaHigh;
     public static int parameterManaMin;
     public static int parameterManaMax;
-public Card Card1 = new Card("","Card1","","",1,"","","");
+    public Card Card1 = new Card("","Card1","","",1,"","","");
     public Card Card2 = new Card("","Card2","","",1,"","","");
 
     @FXML
@@ -69,6 +88,45 @@ public Card Card1 = new Card("","Card1","","",1,"","","");
        typeTxtArea.setText(" ");
     }
 
+    public void showNewSearchPic() throws IOException {
+        String cardName = resultsListView.getSelectionModel().getSelectedItem().toString();
+        Card cardToAdd = getCardFromSearchResults(cardName);
+
+        BufferedImage image = null;
+        try {
+            URL url = new URL(cardToAdd.getImage());
+            URLConnection conn = url.openConnection();
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0");
+
+            conn.connect();
+            InputStream urlStream = conn.getInputStream();
+            image = ImageIO.read(urlStream);
+            if (image != null) {
+                WritableImage wr = new WritableImage(image.getWidth(), image.getHeight());
+                PixelWriter pw = wr.getPixelWriter();
+                for (int x = 0; x < image.getWidth(); x++) {
+                    for (int y = 0; y < image.getHeight(); y++) {
+                        pw.setArgb(x, y, image.getRGB(x, y));
+                    }
+                }
+                SearchPic.setImage(wr);
+            }
+
+
+
+
+        } catch (IOException e) {
+            System.out.println("Something went wrong, sorry:" + e.toString());
+            e.printStackTrace();
+        }
+
+
+
+
+
+
+
+    }
 
    public void searchBtnClick() {
        parameterDescription = descriptionTxtArea.getText();
@@ -92,6 +150,15 @@ public Card Card1 = new Card("","Card1","","",1,"","","");
         
 
    }
+   public Card getCardFromSearchResults(String cardName){
+       int x = searchResultCards.size();
+       for (int i = 0; i < x;i++){
+           if (searchResultCards.get(i).toString().equals(cardName)){Card cardToAdd = searchResultCards.get(i); System.out.println("Found it!"+cardToAdd.getImage());return cardToAdd;}
+       }
+
+       return Card1;
+   }
+  //addCardToDeckBtnClick handles adding a card to a deck
     public void addCardToDeckBtnClick(){
         String deckName = deckToAddToBox.getValue();
         String cardName = resultsListView.getSelectionModel().getSelectedItem().toString();

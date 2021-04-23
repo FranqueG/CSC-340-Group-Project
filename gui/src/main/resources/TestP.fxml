@@ -164,14 +164,14 @@
                             </Spinner>
                             <Label layoutX="205.0" layoutY="558.0" text=" and" />
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="709.0" layoutX="376.0" layoutY="22.0" stroke="BLACK" strokeType="INSIDE" width="4.0" />
-                        <ListView fx:id="resultsListView" layoutX="425.0" layoutY="51.0" prefHeight="419.0" prefWidth="296.0" />
+                        <ListView fx:id="resultsListView" layoutX="425.0" layoutY="51.0" onMouseClicked="#showNewSearchPic" prefHeight="419.0" prefWidth="296.0" />
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="29.0" layoutX="425.0" layoutY="22.0" stroke="BLACK" strokeType="INSIDE" width="296.0" />
                         <Label alignment="CENTER" layoutX="431.0" layoutY="23.0" prefHeight="18.0" prefWidth="284.0" text="Search Results">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <ImageView fitHeight="453.0" fitWidth="322.0" layoutX="787.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="SearchPic" fitHeight="453.0" fitWidth="322.0" layoutX="787.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@pics/CreepyDoll.jpg" />
                            </image>
