@@ -1,9 +1,9 @@
 package database.sqlite;
 /*
-Last updated: 3/23/2021
-This class represents a connection to a SQLite database and is responsible for
-saving and loading data to the disk through it.
-Authors: Joshua Millikan
+ * Last updated: 4/23/2021
+ * This class represents a connection to a SQLite database and is responsible for
+ * saving and loading data to the disk through it.
+ * Authors: Joshua Millikan
  */
 
 import annotations.Column;
@@ -11,7 +11,7 @@ import annotations.Table;
 import database.Database;
 import errors.DatabaseError;
 
-import java.lang.reflect.Field;
+import java.io.InvalidClassException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.sql.*;
@@ -40,22 +40,27 @@ public class SqliteDatabase extends Database {
     }
 
     @Override
-    protected <T> List<T> selectFromDatabase(T _obj) {
+    protected <T> ArrayList<T> selectFromDatabase(T _obj) {
         var annotation = _obj.getClass().getAnnotation(Table.class);
         if (annotation == null)
             throw new DatabaseError("Attempted to use class that is not a table!");
         try {
             Map<String, ColumnData> searchFields = new HashMap<>();
             for (var field : Database.getColumns(_obj).entrySet()) {
-                if (field.getValue() != null)
+                if (field.getValue().getData() != null)
                     searchFields.put(field.getKey(), field.getValue());
             }
             var statement = this.connection.prepareStatement(createSelectString(annotation.name(), searchFields));
             int i = 0;
-            for (var field : searchFields.values())
-                statement.setObject(i++, field.getData());
+            for (var field : searchFields.values()) {
+                try {
+                    statement.setObject(++i, field.getData());
+                } catch (ArrayIndexOutOfBoundsException e){
+                    break;
+                }
+            }
             ResultSet result = statement.executeQuery();
-            return buildFromResults(result, _obj.getClass());
+            return buildFromResults(result, (Class<T>) _obj.getClass());
         } catch (IllegalAccessException | SQLException e) {
             throw new DatabaseError("Unable to read field from table object! cause: " + e.getMessage());
         }
@@ -182,7 +187,7 @@ public class SqliteDatabase extends Database {
      * @return the SQL query
      */
     private static String createSelectString(String _tableName, Map<String, ColumnData> _searchFields) {
-        var builder = new StringBuilder("SELECT * FROM").append(_tableName);
+        var builder = new StringBuilder("SELECT rowid, * FROM ").append(_tableName);
         StringBuilder tail = new StringBuilder();
         if (_searchFields.size() > 0) {
             builder.append(" WHERE ");
@@ -197,23 +202,14 @@ public class SqliteDatabase extends Database {
         return builder.toString();
     }
 
-    private static String createSelectListString(String _tableName, ColumnData _field) {
-        List<?> ls = (List<?>) _field.getData();
-        var annotation = ls.get(0).getClass().getAnnotation(Table.class);
-        String listDataName = annotation.name().equals("") ? ls.get(0).getClass().getName() : annotation.name();
-        return "INNER JOIN " + listDataName + "_join_table on " + listDataName + "_join_table.parent = " + _tableName + ".rowid\n"
-                + "INNER JOIN " + listDataName + " on " + listDataName + ".rowid = " + listDataName + "_join_table.child\n";
-    }
-
     /**
      * Constructs java objects from SQL results
      *
      * @param _result SQLite query result data
      * @return list of objects constructed
      */
-    private <T> List<T> buildFromResults(ResultSet _result, Class<?> _class) {
-        List<T> ls = new ArrayList<>();
-        boolean done = false;
+    private <T> ArrayList<T> buildFromResults(ResultSet _result, Class<T> _class) {
+        var ls = new ArrayList<T>();
         try {
             while (_result.next()) {
                 try {
@@ -221,22 +217,30 @@ public class SqliteDatabase extends Database {
                     for (var field : obj.getClass().getDeclaredFields()) {
                         var annotation = field.getAnnotation(Column.class);
                         if (annotation != null) {
-                            String fieldName = annotation.name().equals("") ? field.getName() : annotation.name();
+                            String fieldName = nameFromAnnotation(field);
                             field.setAccessible(true);
-                            if (List.class.isAssignableFrom(field.getType()))
-                                //field.set(obj, buildListFromResults(_result));todo
-                                ;
+                            if (List.class.isAssignableFrom(field.getType())) {
+                                String tableName = nameFromAnnotation(obj.getClass());
+                                field.set(obj, field.getType().cast(
+                                        buildListFromResults(
+                                                tableName,
+                                                nameFromAnnotation(annotation.containsType()),
+                                                _result.getLong("rowid"),
+                                                annotation.containsType())
+                                        )
+                                );
+                            }
                             else {
                                 try {
-                                    field.set(obj, _result.getObject(fieldName));
+                                    field.set(obj, field.getType().cast(_result.getObject(fieldName)));
                                 } catch (SQLException e) {
                                     e.printStackTrace();
                                 }
                             }
                         }
                     }
-                    ls.add((T) obj);
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    ls.add(obj);
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | InvalidClassException e) {
                     e.printStackTrace();
                 }
             }
@@ -246,9 +250,9 @@ public class SqliteDatabase extends Database {
         return ls;
     }
 
-    private <T> List<T> buildListFromResults(String _parentTable, String _childName, long _parentId, Field _listField) throws SQLException {
+    private <T> ArrayList<T> buildListFromResults(String _parentTable, String _childName, long _parentId, Class<T> _listField) throws SQLException {
         var joinTableName = _childName + "_" + _parentTable + "_join_table";
-        String query = "SELECT * FROM " + joinTableName + " WHERE parent=?" + "INNER JOIN " + _childName + " ON " + _childName + ".rowid = " + joinTableName + ".child;";
+        String query = "SELECT * FROM " + joinTableName  + " INNER JOIN " + _childName + " ON " + _childName + ".rowid = " + joinTableName + ".child " + " WHERE parent=? ;";
         var statement = connection.prepareStatement(query);
         statement.setLong(1, _parentId);
         var lsResult = statement.executeQuery();
@@ -257,12 +261,17 @@ public class SqliteDatabase extends Database {
         try {
             while (lsResult.next()) {
                 try {
-                    var obj = _listField.getType().getDeclaredConstructor().newInstance();
-                    for (var field : obj.getClass().getDeclaredFields()) {
-                        //todo
-
+                    var obj = _listField.getDeclaredConstructor().newInstance();
+                    for (var field : _listField.getDeclaredFields()) {
+                        var annotation = field.getAnnotation(Column.class);
+                        if(annotation != null) {
+                            String fieldName = annotation.name().equals("") ? field.getName() : annotation.name();
+                            field.setAccessible(true);
+                            var value = lsResult.getObject(fieldName);
+                            field.set(obj, value);
+                        }
                     }
-                    ls.add((T) obj);
+                    ls.add(_listField.cast(obj));
                 } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
                     e.printStackTrace();
                 }
