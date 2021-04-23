@@ -159,10 +159,9 @@ public class HelloApi {
      * @param _minCMC
      * @return
      */
-    public static ArrayList advancedSearch(String _name, String _description, ArrayList<String> _types, String _colors, int _minCMC, int _maxCMC) {
-        String callAction = "/cards";
-        String secondAction = "/search?q=";
-        String urlString = baseURL + callAction + secondAction;
+    public static ArrayList advancedSearch(String _name, String _description, ArrayList<String> _types, String _includeColors, String _excludeColors, int _minCMC, int _maxCMC) {
+        String callAction = "/cards/search?q=";
+        String urlString = baseURL + callAction;
 
         // This array list is used to dynamically append parameters to the urlString
         ArrayList<String> parameters = new ArrayList<>();
@@ -170,7 +169,7 @@ public class HelloApi {
         addName(parameters, _name);
         addDescription(parameters, _description);
         addTypes(parameters, _types);
-        addColors(parameters, _colors);
+        addColors(parameters, _includeColors, _excludeColors);
         addMana(parameters, _minCMC, _maxCMC);
 
         // Construct final urlString from modified parameter list
@@ -196,7 +195,7 @@ public class HelloApi {
      * @param _params
      * @param _name
      */
-    static void addName(ArrayList<String> _parameters, String _name) {
+    private static void addName(ArrayList<String> _parameters, String _name) {
         // Construct nameString for a word-specific search query
         if (_name != null && _name.isEmpty() != true) {
             // Separate string by spaces in search term
@@ -213,7 +212,7 @@ public class HelloApi {
      * @param _parameters
      * @param _description
      */
-    static void addDescription(ArrayList<String> _parameters, String _description) {
+    private static void addDescription(ArrayList<String> _parameters, String _description) {
         if (_description != null && _description.isEmpty() != true) {
             // Separate string by spaces in search term
             String descriptionString = "%28";
@@ -230,7 +229,7 @@ public class HelloApi {
      * @param _parameters
      * @param _types
      */
-    static void addTypes(ArrayList<String> _parameters, ArrayList<String> _types) {
+    private static void addTypes(ArrayList<String> _parameters, ArrayList<String> _types) {
         // Sort through non-empty list of card types that the user selected
         if (_types.isEmpty() != true) {
             // Append parenthesis code
@@ -253,16 +252,30 @@ public class HelloApi {
     }
 
     /**
-     * Adds color filter to url parameter list
+     * Adds color filter to url parammeter list
      *
      * @param _parameters
-     * @param _color
+     * @param _includeColor
+     * @param _excludeColor
      */
-    static void addColors(ArrayList<String> _parameters, String _color) {
-        // Construct colorString. The String _color is in GRUWB format with each letter associating to a color to filter by.
-        if (_color != null && _color.isEmpty() != true) {
+    private static void addColors(ArrayList<String> _parameters, String _includeColor, String _excludeColor) {
+        // Construct colorString. The Strings _color and _excludeColor are in GRUWB format with each letter associating to a color to filter by.
+        if (_includeColor != null && _includeColor.isEmpty() != true) {
             String colorString = "color%3C%3D";
-            colorString += _color;
+            colorString += _includeColor;
+
+            // Add excluded colors if applicable
+            if (_excludeColor != null && _excludeColor.isEmpty() != true) {
+                colorString += "++";
+                char[] ch = _excludeColor.toCharArray();
+
+                for (int i = 0; i < ch.length; i++) {
+                    colorString += "%2Dc%3A" + ch[i];
+                    if (i != ch.length - 1) {
+                        colorString += "+";
+                    }
+                }
+            }
             _parameters.add(colorString);
         }
     }
@@ -274,7 +287,7 @@ public class HelloApi {
      * @param _minCMC
      * @param _maxCMC
      */
-    static void addMana(ArrayList<String> _parameters, int _minCMC, int _maxCMC) {
+    private static void addMana(ArrayList<String> _parameters, int _minCMC, int _maxCMC) {
         if (_maxCMC >= _minCMC) {
             String manaString = "cmc%3C%3D" + _maxCMC + "+cmc%3E%3D" + _minCMC;
             _parameters.add(manaString);
