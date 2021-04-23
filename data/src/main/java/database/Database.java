@@ -22,10 +22,8 @@ public abstract class Database {
      * @param <T> object type
      */
     public final <T> void saveObjects(Collection<T> _objects) {
-        //pool.execute(() -> {
             for(Object obj : _objects)
-                updateInsert(obj);
-        //});
+                pool.submit(()-> updateInsert(obj));
     }
 
     /**

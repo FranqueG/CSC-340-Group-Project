@@ -11,6 +11,7 @@ import annotations.Table;
 import database.Database;
 import errors.DatabaseError;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.sql.*;
@@ -72,7 +73,7 @@ public class SqliteDatabase extends Database {
             String tableName = annotation.name().equals("") ? _table.getClass().getName() : annotation.name();
             String createSting = createTableString(tableName, fields);
             Statement statement = this.connection.createStatement();
-            if(debugPrint)
+            if (debugPrint)
                 System.out.println(createSting);
             statement.execute(createSting);
             // handle nested tables
@@ -92,12 +93,12 @@ public class SqliteDatabase extends Database {
 
             // Perform insertion statement
             String insertString = createInsertString(tableName, fields);
-            if(debugPrint)
+            if (debugPrint)
                 System.out.println(insertString);
             PreparedStatement preparedStatement = this.connection.prepareStatement(insertString, Statement.RETURN_GENERATED_KEYS);
             int i = 1;
             for (var field : fields.values()) {
-                if(!field.isList()) {
+                if (!field.isList()) {
                     preparedStatement.setObject(i, field.getData());
                     i++;
                 }
@@ -114,7 +115,7 @@ public class SqliteDatabase extends Database {
     /**
      * Create a list of objects in the database
      *
-     * @param _listData column containing the list
+     * @param _listData    column containing the list
      * @param _owningTable owning table rowid
      */
     private void createList(ColumnData _listData, long _owningTable, String _owningName) {
@@ -130,12 +131,12 @@ public class SqliteDatabase extends Database {
                 String tableName = annotation.name().equals("") ? firstElement.getClass().getName() : annotation.name();
                 String tableString = createTableString(tableName, fields);
                 Statement statement = this.connection.createStatement();
-                if(debugPrint)
+                if (debugPrint)
                     System.out.println(tableString);
                 statement.execute(tableString);
 
                 //create join table linking list and the elements
-                String createString = "CREATE TABLE IF NOT EXISTS " + tableName +"_"+_owningName+
+                String createString = "CREATE TABLE IF NOT EXISTS " + tableName + "_" + _owningName +
                         "_join_table (" +
                         "parent INTEGER NOT NULL," +
                         " child INTEGER UNIQUE NOT NULL," +
@@ -148,7 +149,7 @@ public class SqliteDatabase extends Database {
                     long child = updateInsert(element);
 
                     //update the join tables for the list
-                    var query = createListInsertStatement(tableName + "_"+_owningName+ "_join_table");
+                    var query = createListInsertStatement(tableName + "_" + _owningName + "_join_table");
                     var preparedStatement = this.connection.prepareStatement(query);
                     preparedStatement.setLong(1, _owningTable);
                     preparedStatement.setLong(2, child);
@@ -186,9 +187,7 @@ public class SqliteDatabase extends Database {
         if (_searchFields.size() > 0) {
             builder.append(" WHERE ");
             for (var field : _searchFields.entrySet()) {
-                if (field.getValue().isList())
-                    tail.append(createSelectListString(_tableName, field.getValue()));
-                else
+                if (!field.getValue().isList())
                     builder.append(field.getKey())
                             .append("=? AND ");
             }
@@ -212,7 +211,7 @@ public class SqliteDatabase extends Database {
      * @param _result SQLite query result data
      * @return list of objects constructed
      */
-    private static <T> List<T> buildFromResults(ResultSet _result, Class<?> _class) {
+    private <T> List<T> buildFromResults(ResultSet _result, Class<?> _class) {
         List<T> ls = new ArrayList<>();
         boolean done = false;
         try {
@@ -225,7 +224,8 @@ public class SqliteDatabase extends Database {
                             String fieldName = annotation.name().equals("") ? field.getName() : annotation.name();
                             field.setAccessible(true);
                             if (List.class.isAssignableFrom(field.getType()))
-                                field.set(obj,buildListFromResults(_result));
+                                //field.set(obj, buildListFromResults(_result));todo
+                                ;
                             else {
                                 try {
                                     field.set(obj, _result.getObject(fieldName));
@@ -246,9 +246,32 @@ public class SqliteDatabase extends Database {
         return ls;
     }
 
-    private static <T> List<T> buildListFromResults(ResultSet _results) {
-        //todo
-        return null;
+    private <T> List<T> buildListFromResults(String _parentTable, String _childName, long _parentId, Field _listField) throws SQLException {
+        var joinTableName = _childName + "_" + _parentTable + "_join_table";
+        String query = "SELECT * FROM " + joinTableName + " WHERE parent=?" + "INNER JOIN " + _childName + " ON " + _childName + ".rowid = " + joinTableName + ".child;";
+        var statement = connection.prepareStatement(query);
+        statement.setLong(1, _parentId);
+        var lsResult = statement.executeQuery();
+
+        var ls = new ArrayList<T>();
+        try {
+            while (lsResult.next()) {
+                try {
+                    var obj = _listField.getType().getDeclaredConstructor().newInstance();
+                    for (var field : obj.getClass().getDeclaredFields()) {
+                        //todo
+
+                    }
+                    ls.add((T) obj);
+                } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return ls;
     }
 
     /**
@@ -270,8 +293,8 @@ public class SqliteDatabase extends Database {
         builder.deleteCharAt(builder.lastIndexOf(","));
         builder.append(") VALUES (");
         _fields.entrySet().stream().filter((a) -> !a.getValue().isList()).forEach((a) -> {
-                    builder.append("?,");
-                });
+            builder.append("?,");
+        });
         builder.deleteCharAt(builder.lastIndexOf(","));
         builder.append("); ");
         return builder.toString();
@@ -321,7 +344,7 @@ public class SqliteDatabase extends Database {
         if (annotation == null)
             throw new DatabaseError("attempted to deactivate non-table object");
         String tableName = annotation.name().equals("") ? _table.getClass().getName() : annotation.name();
-        var builder = new StringBuilder("UPDATE "+tableName+" SET active=0 WHERE ");
+        var builder = new StringBuilder("UPDATE " + tableName + " SET active=0 WHERE ");
         try {
             // create query string
             var columns = getColumns(_table);
@@ -334,7 +357,7 @@ public class SqliteDatabase extends Database {
 
             // execute statement
             var preparedStatement = this.connection.prepareStatement(builder.toString());
-            int i=0;
+            int i = 0;
             for (var data : columns.values()) {
                 if (data.getData() != null)
                     preparedStatement.setObject(i++, data.getData());
