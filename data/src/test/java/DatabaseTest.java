@@ -37,7 +37,7 @@ public class DatabaseTest {
         @Column
         private NestedTable nested;
 
-        @Column
+        @Column(containsType = NestedTable.class)
         private ArrayList<NestedTable> ls = new ArrayList<>();
     }
 

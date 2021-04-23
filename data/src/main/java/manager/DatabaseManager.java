@@ -1,16 +1,19 @@
 package manager;
 /*
-Last updated: 3/23/2021
-This class manages access to the database
+ * Last updated: 4/23/2021
+ * This class manages access to the database
+ * Authors: Joshua Millikan
  */
 
 import database.Database;
 import database.sqlite.SqliteDatabase;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.Future;
 
 public final class DatabaseManager {
@@ -20,7 +23,9 @@ public final class DatabaseManager {
      * Open a connection to the database file at the given filepath
      * @param _filepath path to the database file
      */
-    public static void connectToDatabase(String _filepath) {
+    public static void connectToDatabase(String _filepath) throws IOException {
+        if(!_filepath.equals(":memory:"))
+            Files.createDirectories(Path.of(_filepath).getParent());
         database = new SqliteDatabase(_filepath);
     }
 
@@ -28,8 +33,8 @@ public final class DatabaseManager {
      * Open a connection to the database with the default path of
      * (user home directory)/MtgDeckBuilder/database.sqlite3
      */
-    public static void connectToDatabase() {
-        database = new SqliteDatabase(System.getProperty("user.home")+"/MtgDeckBuilder/database.sqlite3");
+    public static void connectToDatabase() throws IOException {
+        connectToDatabase(System.getProperty("user.home")+"/MtgDeckBuilder/database.sqlite3");
     }
 
     /**
@@ -77,7 +82,7 @@ public final class DatabaseManager {
      * @param <T> the type of the object returned
      * @return A future promise that will contain the list when the database operation completes
      */
-    public static <T> Future<List<T>> loadObject(final T _obj) {
+    public static <T> Future<ArrayList<T>> loadObject(final T _obj) {
         return database.loadObject(_obj);
     }
 
@@ -100,9 +105,10 @@ public final class DatabaseManager {
      * for each object passed as a parameter parameter once the operation is completes.
      */
     @SafeVarargs//TODO make sure the varargs is a actually safe
-    public static <T>ArrayList<Future<List<T>>> loadObjects(final T... _objs) {
+    public static <T>ArrayList<Future<ArrayList<T>>> loadObjects(final T... _objs) {
         return database.loadObjects(Arrays.asList(_objs));
     }
 
+    //This class is not meant to be instantiated
     private DatabaseManager() {throw new UnsupportedOperationException("This class should not be instantiated");}
 }

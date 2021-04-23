@@ -12,4 +12,5 @@ public @interface Column {
     boolean unique() default false;
     String name() default "";
     boolean primaryKey() default false;
+    Class<?> containsType() default Object.class;
 }

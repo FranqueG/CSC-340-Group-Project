@@ -4,7 +4,7 @@ import database.Database;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class ReflectionTest extends Database {
 
@@ -24,7 +24,7 @@ public class ReflectionTest extends Database {
     }
 
     @Override
-    protected List<Object> selectFromDatabase(Object _obj) {
+    protected ArrayList<Object> selectFromDatabase(Object _obj) {
         return null;
     }
 
