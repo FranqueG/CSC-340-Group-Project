@@ -95,7 +95,7 @@ public abstract class Database {
      * Deactivates a record corresponding to the object given
      * @param _table the object to disable the record for
      */
-    protected abstract void deactivate(Object _table);
+    public abstract void deactivate(Object _table);
 
     /**
      * Reads a object as a table using reflection
