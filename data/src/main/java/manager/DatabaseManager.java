@@ -109,6 +109,14 @@ public final class DatabaseManager {
         return database.loadObjects(Arrays.asList(_objs));
     }
 
+    /**
+     * Work in progress
+     * @param _obj object to use as a filter to delete records
+     */
+    public static void deleteObject(Object _obj) {
+        database.deactivate(_obj);
+    }
+
     //This class is not meant to be instantiated
     private DatabaseManager() {throw new UnsupportedOperationException("This class should not be instantiated");}
 }

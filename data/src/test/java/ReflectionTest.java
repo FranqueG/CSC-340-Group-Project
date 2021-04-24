@@ -32,7 +32,7 @@ public class ReflectionTest extends Database {
     public long updateInsert(Object _table) { /* Do nothing */return 0;}
 
     @Override
-    protected void deactivate(Object _table) {
+    public void deactivate(Object _table) {
         // do nothing
     }
 

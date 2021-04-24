@@ -348,7 +348,7 @@ public class SqliteDatabase extends Database {
     }
 
     @Override
-    protected void deactivate(Object _table) {
+    public void deactivate(Object _table) {
         var annotation = _table.getClass().getAnnotation(Table.class);
         if (annotation == null)
             throw new DatabaseError("attempted to deactivate non-table object");
