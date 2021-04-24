@@ -127,11 +127,11 @@
                             <TextArea fx:id="nameTxtArea" layoutX="144.0" layoutY="276.0" prefHeight="25.0" prefWidth="150.0" />
                             <Label layoutX="79.0" layoutY="269.0" prefHeight="43.0" prefWidth="62.0" text="           Title&#10;    contains:" />
                             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e5eaee" height="79.0" layoutX="141.0" layoutY="175.0" stroke="BLACK" strokeType="INSIDE" width="156.0" />
-                            <CheckBox layoutX="150.0" layoutY="181.0" mnemonicParsing="false" text="Green" />
-                            <CheckBox layoutX="150.0" layoutY="204.0" mnemonicParsing="false" text="Red" />
-                            <CheckBox layoutX="149.0" layoutY="228.0" mnemonicParsing="false" text="Blue" />
-                            <CheckBox layoutX="219.0" layoutY="181.0" mnemonicParsing="false" text="White" />
-                            <CheckBox layoutX="219.0" layoutY="206.0" mnemonicParsing="false" text="Black" />
+                            <CheckBox fx:id="greenN" layoutX="150.0" layoutY="181.0" mnemonicParsing="false" text="Green" />
+                            <CheckBox fx:id="redN" layoutX="150.0" layoutY="204.0" mnemonicParsing="false" text="Red" />
+                            <CheckBox fx:id="blueN" layoutX="149.0" layoutY="228.0" mnemonicParsing="false" text="Blue" />
+                            <CheckBox fx:id="whiteN" layoutX="219.0" layoutY="181.0" mnemonicParsing="false" text="White" />
+                            <CheckBox fx:id="blackN" layoutX="219.0" layoutY="206.0" mnemonicParsing="false" text="Black" />
                             <Label layoutX="71.0" layoutY="181.0" text="But exclude &#10;cards with:" />
                             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e5eaee" height="79.0" layoutX="141.0" layoutY="85.0" stroke="BLACK" strokeType="INSIDE" width="156.0" />
                             <Label layoutX="68.0" layoutY="85.0" text="  Includes at&#10;least one of:" />

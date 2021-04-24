@@ -47,6 +47,12 @@ public class TestPController  {
     public CheckBox blackY;
     public CheckBox blueY;
     public CheckBox redY;
+    // these exclude colors
+    public CheckBox greenN;
+    public CheckBox whiteN;
+    public CheckBox blackN;
+    public CheckBox blueN;
+    public CheckBox redN;
     public ListView resultsListView;
     // searchResultCards is an ArrayList of card results from the API
     public static ArrayList<Card> searchResultCards = new ArrayList<>();
@@ -61,8 +67,8 @@ public class TestPController  {
     public static int parameterManaMax;
     public static String parameterDescription;
     public static String parameterName;
-    public static String parameterColors;
-
+    public static String parameterIncludeColors;
+    public static String parameterExcludeColors;
 
     public Spinner manaLow;
     public Spinner manaHigh;
@@ -142,11 +148,12 @@ public class TestPController  {
    public void searchBtnClick() {
        parameterDescription = descriptionTxtArea.getText();
        parameterName = nameTxtArea.getText();
-       parameterColors = createColorString();
+       parameterIncludeColors = createColorString(greenY,redY,blackY,whiteY,blueY);
+       parameterExcludeColors = createColorString(greenN,redN,blackN,whiteN,blueN);
        parameterManaMin = (int) manaLow.getValue();
        parameterManaMax = (int) manaHigh.getValue();
      
-       searchResultCards = advancedSearch(parameterName,parameterDescription,parameterCardTypes,parameterColors,parameterManaMin,parameterManaMax);
+       searchResultCards = advancedSearch(parameterName,parameterDescription,parameterCardTypes,parameterIncludeColors,parameterExcludeColors,parameterManaMin,parameterManaMax);
      
        resultsListView.setItems(FXCollections.observableList(searchResultCards));
        
@@ -183,13 +190,14 @@ public class TestPController  {
         System.out.println("CN: "+cardName);
 
     }
-   public String createColorString(){
+    // this creates a string formatted for the API to include colors
+   public String createColorString(CheckBox G,CheckBox R, CheckBox U, CheckBox W, CheckBox B){
        String colorString = "";
-        if (greenY.isSelected()){colorString += "G";}
-       if (redY.isSelected()){colorString += "R";}
-       if (blueY.isSelected()){colorString += "U";}
-       if (whiteY.isSelected()){colorString += "W";}
-       if (blackY.isSelected()){colorString += "B";}
+       if (G.isSelected()){colorString += "G";}
+       if (R.isSelected()){colorString += "R";}
+       if (U.isSelected()){colorString += "U";}
+       if (W.isSelected()){colorString += "W";}
+       if (B.isSelected()){colorString += "B";}
        System.out.println(colorString);
        return colorString;
 
