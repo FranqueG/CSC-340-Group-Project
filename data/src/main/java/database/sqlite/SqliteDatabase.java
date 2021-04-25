@@ -23,7 +23,6 @@ import java.util.Map;
 public class SqliteDatabase extends Database {
     private final Connection connection;
     private static final Map<String, String> queryCache = new HashMap<>();
-    private boolean debugPrint = false;
 
     /**
      * Opens a SQLite database connection
@@ -78,8 +77,6 @@ public class SqliteDatabase extends Database {
             String tableName = annotation.name().equals("") ? _table.getClass().getName() : annotation.name();
             String createSting = createTableString(tableName, fields);
             Statement statement = this.connection.createStatement();
-            if (debugPrint)
-                System.out.println(createSting);
             statement.execute(createSting);
             // handle nested tables
             for (var field : fields.entrySet()) {
@@ -98,8 +95,6 @@ public class SqliteDatabase extends Database {
 
             // Perform insertion statement
             String insertString = createInsertString(tableName, fields);
-            if (debugPrint)
-                System.out.println(insertString);
             PreparedStatement preparedStatement = this.connection.prepareStatement(insertString, Statement.RETURN_GENERATED_KEYS);
             int i = 1;
             for (var field : fields.values()) {
@@ -136,8 +131,7 @@ public class SqliteDatabase extends Database {
                 String tableName = annotation.name().equals("") ? firstElement.getClass().getName() : annotation.name();
                 String tableString = createTableString(tableName, fields);
                 Statement statement = this.connection.createStatement();
-                if (debugPrint)
-                    System.out.println(tableString);
+
                 statement.execute(tableString);
 
                 //create join table linking list and the elements
