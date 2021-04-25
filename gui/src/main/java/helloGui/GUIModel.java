@@ -30,7 +30,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
-public class TestPController  {
+public class GUIModel {
     @FXML
     // Picture of selected card.
     public ImageView SearchPic;
