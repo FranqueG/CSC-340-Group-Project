@@ -71,21 +71,9 @@ public class TestPController  {
     public Spinner manaHigh;
     // A List View to show card results for the user to choose from.
     public ListView resultsListView;
-    // searchResultCards is an ArrayList of card results from the API.
-   // public static ArrayList<Card> searchResultCards = new ArrayList<>();
+
     // allCardTypes is an ArrayList of types for the user to choose from.
     public static ArrayList<String> allCardTypes = getCardTypes();
-    // parameterCardTypes is an ArrayList formatted to work with the API.
-    //public static ArrayList<String> _parameterCardTypes = new ArrayList<String>();
-    //pCT is an Arraylist formatted to display to the user.
-    //public static ArrayList<String> pCT= new ArrayList<String>();
-    //these are variables to store parameters to send to the API.
-    //public static int _parameterManaMin;
-   // public static int _parameterManaMax;
-   // public static String _parameterDescription;
-   // public static String _parameterName;
-   // public static String _parameterIncludeColors;
-   // public static String _parameterExcludeColors;
 
 
 
@@ -95,49 +83,36 @@ public class TestPController  {
     public Card Card2 = new Card("","Card2","","",1,"","","");
 
     @FXML
+    //initialize fills cardTypeCBox with types for the user to choose from.
     public void initialize() {
-        var strings = new ArrayList<String>();
-       // var oL = getCardTypes();
-        strings.add("test1");
-        strings.add("test2");
-        strings.add("test3");
-        System.out.println(allCardTypes.toString());
-       // System.out.println(oL.toString());
+
         cardTypeCBox.setItems(FXCollections.observableList(allCardTypes));
     }
 
-    //adds a type to search for
+    //addTypeBtnClick adds a type to search for
     public void addTypeBtnClick(){
 
-       String newType = cardTypeCBox.getValue();
-
+        String newType = cardTypeCBox.getValue();
         typeTxtArea.setText(" "+addToTypeArray(newType).toString().replaceAll("[ \\[ \\] \\,]"," "));
-    }
-    //resets cardTypes to null
-    public void clearTypeBtnClick(){
 
+    }
+    //clearTypeBtnClick resets cardTypes to null
+    public void clearTypeBtnClick(){
 
         clearCardTypeArray();
         typeTxtArea.setText(" ");
 
-    }
-
+        }
+    // showNewSearchPic changes the card image displayed to the user
     public void showNewSearchPic() throws IOException {
         String cardName = resultsListView.getSelectionModel().getSelectedItem().toString();
         Card cardToShow = getCardFromSearchResults(cardName);
         WritableImage wr = getWritableImageFromURL(cardToShow);
         SearchPic.setImage(wr);
-
-
-
-
-
-
-
-
-    }
-
+        }
+   // searchBtnClick returns a new arraylist of card results, then sets resultsListView to display them
    public void searchBtnClick() {
+
        String _parameterDescription = descriptionTxtArea.getText();
        String  _parameterName = nameTxtArea.getText();
        String _parameterIncludeColors = createColorString(greenY,redY,blackY,whiteY,blueY);
@@ -147,9 +122,19 @@ public class TestPController  {
        ArrayList<Card> mySearchResultCards  = performSearch(_parameterName,_parameterDescription,_parameterIncludeColors,_parameterExcludeColors,_parameterManaMin,_parameterManaMax);
        resultsListView.setItems(FXCollections.observableList(mySearchResultCards));
        
-   }
+       }
+   // createColorString formats a string from checkboxes the API can use to search cards with
+    public String createColorString(CheckBox G,CheckBox R, CheckBox U, CheckBox W, CheckBox B){
+        String colorString = "";
+        if (G.isSelected()){colorString += "G";}
+        if (R.isSelected()){colorString += "R";}
+        if (U.isSelected()){colorString += "U";}
+        if (W.isSelected()){colorString += "W";}
+        if (B.isSelected()){colorString += "B";}
+        System.out.println(colorString);
+        return colorString;
 
-
+    }
 
 
 
@@ -191,15 +176,5 @@ public class TestPController  {
 
 
     // this creates a string formatted for the API to include colors
-   public String createColorString(CheckBox G,CheckBox R, CheckBox U, CheckBox W, CheckBox B){
-       String colorString = "";
-       if (G.isSelected()){colorString += "G";}
-       if (R.isSelected()){colorString += "R";}
-       if (U.isSelected()){colorString += "U";}
-       if (W.isSelected()){colorString += "W";}
-       if (B.isSelected()){colorString += "B";}
-       System.out.println(colorString);
-       return colorString;
 
-   }
 }
