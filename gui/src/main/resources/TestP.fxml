@@ -72,7 +72,7 @@
                                 </FXCollections>
                             </items>
                         </ComboBox>
-                        <Button fx:id="createNewDeckBtn" layoutX="258.0" layoutY="653.0" mnemonicParsing="false" onAction="#createNewDeckBtnClick" text="Add">
+                        <Button fx:id="createNewDeckBtn" layoutX="258.0" layoutY="653.0" mnemonicParsing="false" text="Add">
                            <font>
                               <Font size="18.0" />
                            </font></Button>
@@ -172,7 +172,7 @@
                               <Image url="@pics/CreepyDoll.jpg" />
                            </image>
                         </ImageView>
-                        <Button fx:id="addCardToDeckBtn" layoutX="787.0" layoutY="488.0" mnemonicParsing="false" onAction="#addCardToDeckBtnClick" prefHeight="42.0" prefWidth="121.0" text="Add card to:">
+                        <Button fx:id="addCardToDeckBtn" layoutX="787.0" layoutY="488.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="121.0" text="Add card to:">
                            <font>
                               <Font size="18.0" />
                            </font>
