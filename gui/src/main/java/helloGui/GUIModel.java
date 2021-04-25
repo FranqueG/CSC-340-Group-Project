@@ -139,6 +139,7 @@ public class GUIModel {
 
 
    //JUNK!!!!!! USE LATER??? JUST DELETE????
+
    //public void createNewDeckBtnClick(){
         //String deckName = newDeckNameTxtField.getText();
         //String ruleSet = ruleCBox.getValue();
