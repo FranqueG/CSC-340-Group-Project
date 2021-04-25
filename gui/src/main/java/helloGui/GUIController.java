@@ -51,6 +51,7 @@ public class GUIController {
         searchResultCards = advancedSearch(_parameterName,_parameterDescription,_parameterCardTypes,_parameterIncludeColors,_parameterExcludeColors,_parameterManaMin,_parameterManaMax);
         return searchResultCards;
         }
+
     //getWritableImageFromURL uses the URL String from a card object to return a writable image from the internet
     public static WritableImage getWritableImageFromURL(Card _cardToShow){
 

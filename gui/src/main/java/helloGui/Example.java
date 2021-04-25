@@ -12,7 +12,7 @@ public class Example extends Application {
 
     public void start(Stage primaryStage) throws Exception {
 
-        var root = (AnchorPane) FXMLLoader.load(getClass().getResource("/TestP.fxml"));
+        var root = (AnchorPane) FXMLLoader.load(getClass().getResource("/GUIView.fxml"));
         var scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
