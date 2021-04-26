@@ -134,6 +134,8 @@ public class SqliteDatabase extends Database {
 
                 statement.execute(tableString);
 
+
+
                 //create join table linking list and the elements
                 String createString = "CREATE TABLE IF NOT EXISTS " + tableName + "_" + _owningName +
                         "_join_table (" +
@@ -142,10 +144,14 @@ public class SqliteDatabase extends Database {
                         " count INTEGER )";
                 statement.execute(createString);
 
+                //Clear existing join table
+                statement.execute("DELETE FROM "+tableName+"_"+_owningName+"_join_table " +"WHERE parent="+_owningTable+";");
+
                 for (Object element : ls) {
 
                     // insert the actual record
                     long child = updateInsert(element);
+
 
                     //update the join tables for the list
                     var query = createListInsertStatement(tableName + "_" + _owningName + "_join_table");
