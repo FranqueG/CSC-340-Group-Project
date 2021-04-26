@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?><?import javafx.scene.control.*?><?import javafx.scene.image.*?><?import javafx.scene.layout.*?><?import javafx.scene.shape.*?><?import javafx.scene.text.*?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="769.0" prefWidth="1183.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="helloGui.TestPController">
+<?import java.lang.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="769.0" prefWidth="1183.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="helloGui.GUIModel">
    <children>
       <TabPane maxHeight="659.0" maxWidth="600.0" prefHeight="659.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -32,10 +40,6 @@
                            <font>
                               <Font size="18.0" />
                            </font></Button>
-                         <Button layoutX="502.0" layoutY="582.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="143.0" text="Print Details">
-                           <font>
-                              <Font size="18.0" />
-                           </font></Button>
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="43.0" layoutX="425.0" layoutY="45.0" stroke="BLACK" strokeType="INSIDE" width="297.0" />
                          <Label alignment="CENTER" layoutX="369.0" layoutY="52.0" prefHeight="27.0" prefWidth="282.0" text="Rule Set: EDH">
                            <font>
@@ -55,12 +59,20 @@
                            <font>
                               <Font size="18.0" />
                            </font></Label>
-                        <TextField layoutX="119.0" layoutY="561.0" prefHeight="39.0" prefWidth="194.0">
+                        <TextField fx:id="newDeckNameTxtField" layoutX="119.0" layoutY="561.0" prefHeight="39.0" prefWidth="194.0">
                            <font>
                               <Font size="18.0" />
                            </font></TextField>
-                        <ComboBox layoutX="120.0" layoutY="603.0" prefHeight="43.0" prefWidth="193.0" />
-                        <Button layoutX="258.0" layoutY="653.0" mnemonicParsing="false" text="Add">
+                        <ComboBox fx:id="ruleCBox" layoutX="120.0" layoutY="603.0" prefHeight="43.0" prefWidth="193.0">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Item1" />
+                                    <String fx:value="Item 2" />
+                                    <String fx:value="Item 3" />
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                        <Button fx:id="createNewDeckBtn" layoutX="258.0" layoutY="653.0" mnemonicParsing="false" text="Add">
                            <font>
                               <Font size="18.0" />
                            </font></Button>
@@ -75,7 +87,7 @@
                            <font>
                               <Font size="18.0" />
                            </font></Label>
-                        <ComboBox fx:id="box" layoutX="91.0" layoutY="427.0" prefHeight="35.0" prefWidth="220.0" />
+                        <ComboBox fx:id="deckCBox" layoutX="91.0" layoutY="427.0" prefHeight="35.0" prefWidth="220.0" />
                         <Button layoutX="205.0" layoutY="467.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="105.0" text="Delete">
                            <font>
                               <Font size="18.0" />
@@ -110,31 +122,31 @@
                            </image>
                         </ImageView>
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="672.0" layoutX="29.0" layoutY="51.0" stroke="BLACK" strokeType="INSIDE" width="296.0" />
-                            <ComboBox layoutX="143.0" layoutY="476.0" prefHeight="26.0" prefWidth="155.0" />
+                            <ComboBox fx:id="cardTypeCBox" layoutX="143.0" layoutY="476.0" prefHeight="26.0" prefWidth="155.0" />
                             <Label layoutX="80.0" layoutY="384.0" prefHeight="17.0" prefWidth="62.0" text="Card Types:" />
-                            <TextArea layoutX="144.0" layoutY="276.0" prefHeight="25.0" prefWidth="150.0" />
+                            <TextArea fx:id="nameTxtArea" layoutX="144.0" layoutY="276.0" prefHeight="25.0" prefWidth="150.0" />
                             <Label layoutX="79.0" layoutY="269.0" prefHeight="43.0" prefWidth="62.0" text="           Title&#10;    contains:" />
                             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e5eaee" height="79.0" layoutX="141.0" layoutY="175.0" stroke="BLACK" strokeType="INSIDE" width="156.0" />
-                            <CheckBox layoutX="150.0" layoutY="181.0" mnemonicParsing="false" text="Green" />
-                            <CheckBox layoutX="150.0" layoutY="204.0" mnemonicParsing="false" text="Red" />
-                            <CheckBox layoutX="149.0" layoutY="228.0" mnemonicParsing="false" text="Blue" />
-                            <CheckBox layoutX="219.0" layoutY="181.0" mnemonicParsing="false" text="White" />
-                            <CheckBox layoutX="219.0" layoutY="206.0" mnemonicParsing="false" text="Black" />
+                            <CheckBox fx:id="greenN" layoutX="150.0" layoutY="181.0" mnemonicParsing="false" text="Green" />
+                            <CheckBox fx:id="redN" layoutX="150.0" layoutY="204.0" mnemonicParsing="false" text="Red" />
+                            <CheckBox fx:id="blueN" layoutX="149.0" layoutY="228.0" mnemonicParsing="false" text="Blue" />
+                            <CheckBox fx:id="whiteN" layoutX="219.0" layoutY="181.0" mnemonicParsing="false" text="White" />
+                            <CheckBox fx:id="blackN" layoutX="219.0" layoutY="206.0" mnemonicParsing="false" text="Black" />
                             <Label layoutX="71.0" layoutY="181.0" text="But exclude &#10;cards with:" />
                             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e5eaee" height="79.0" layoutX="141.0" layoutY="85.0" stroke="BLACK" strokeType="INSIDE" width="156.0" />
                             <Label layoutX="68.0" layoutY="85.0" text="  Includes at&#10;least one of:" />
-                            <CheckBox layoutX="149.0" layoutY="94.0" mnemonicParsing="false" text="Green" />
-                            <CheckBox layoutX="149.0" layoutY="116.0" mnemonicParsing="false" text="Red" />
-                            <CheckBox layoutX="149.0" layoutY="140.0" mnemonicParsing="false" text="Blue" />
-                            <CheckBox layoutX="219.0" layoutY="94.0" mnemonicParsing="false" text="White" />
-                            <CheckBox layoutX="219.0" layoutY="116.0" mnemonicParsing="false" text="Black" />
-                            <TextArea layoutX="144.0" layoutY="329.0" prefHeight="25.0" prefWidth="150.0" />
+                            <CheckBox fx:id="greenY" layoutX="149.0" layoutY="94.0" mnemonicParsing="false" text="Green" />
+                            <CheckBox fx:id="redY" layoutX="149.0" layoutY="116.0" mnemonicParsing="false" text="Red" />
+                            <CheckBox fx:id="blueY" layoutX="149.0" layoutY="140.0" mnemonicParsing="false" text="Blue" />
+                            <CheckBox fx:id="whiteY" layoutX="219.0" layoutY="94.0" mnemonicParsing="false" text="White" />
+                            <CheckBox fx:id="blackY" layoutX="219.0" layoutY="116.0" mnemonicParsing="false" text="Black" />
+                            <TextArea fx:id="descriptionTxtArea" layoutX="144.0" layoutY="329.0" prefHeight="25.0" prefWidth="150.0" />
                             <Label layoutX="56.0" layoutY="349.0" />
                             <Label layoutX="80.0" layoutY="331.0" text="Description&#10;    contains:" />
-                            <TextArea disable="true" layoutX="143.0" layoutY="384.0" prefHeight="79.0" prefWidth="156.0" />
-                            <Button layoutX="229.0" layoutY="514.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="68.0" text="Add type" />
-                            <Button layoutX="143.0" layoutY="515.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="78.0" text="Clear Types" />
-                            <Button id="FindButton" layoutX="143.0" layoutY="592.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="154.0" text="Find Cards Now!" />
+                            <TextArea fx:id="typeTxtArea" disable="true" layoutX="143.0" layoutY="384.0" prefHeight="79.0" prefWidth="156.0" />
+                            <Button fx:id="addTypeBtn" layoutX="229.0" layoutY="514.0" mnemonicParsing="false" onAction="#addTypeBtnClick" prefHeight="26.0" prefWidth="68.0" text="Add type" />
+                            <Button fx:id="clearTypeBtn" layoutX="143.0" layoutY="515.0" mnemonicParsing="false" onAction="#clearTypeBtnClick" prefHeight="26.0" prefWidth="78.0" text="Clear Types" />
+                            <Button id="FindButton" fx:id="searchBtn" layoutX="143.0" layoutY="592.0" mnemonicParsing="false" onAction="#searchBtnClick" prefHeight="54.0" prefWidth="154.0" text="Find Cards Now!" />
                             <Spinner id="manaLow" fx:id="manaLow" layoutX="144.0" layoutY="554.0" prefHeight="25.0" prefWidth="53.0">
                                 <valueFactory>
                                     <SpinnerValueFactory.IntegerSpinnerValueFactory amountToStepBy="1" initialValue="0" max="35" min="0" />
@@ -148,24 +160,32 @@
                             </Spinner>
                             <Label layoutX="205.0" layoutY="558.0" text=" and" />
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="709.0" layoutX="376.0" layoutY="22.0" stroke="BLACK" strokeType="INSIDE" width="4.0" />
-                        <ListView layoutX="425.0" layoutY="51.0" prefHeight="419.0" prefWidth="296.0" />
+                        <ListView fx:id="resultsListView" layoutX="425.0" layoutY="51.0" onMouseClicked="#showNewSearchPic" prefHeight="419.0" prefWidth="296.0" />
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="29.0" layoutX="425.0" layoutY="22.0" stroke="BLACK" strokeType="INSIDE" width="296.0" />
                         <Label alignment="CENTER" layoutX="431.0" layoutY="23.0" prefHeight="18.0" prefWidth="284.0" text="Search Results">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <ImageView fitHeight="453.0" fitWidth="322.0" layoutX="787.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="SearchPic" fitHeight="453.0" fitWidth="322.0" layoutX="787.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@pics/CreepyDoll.jpg" />
                            </image>
                         </ImageView>
-                        <Button layoutX="787.0" layoutY="488.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="121.0" text="Add card to:">
+                        <Button fx:id="addCardToDeckBtn" layoutX="787.0" layoutY="488.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="121.0" text="Add card to:">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </Button>
-                        <ComboBox layoutX="916.0" layoutY="488.0" prefHeight="42.0" prefWidth="191.0" />
+                        <ComboBox fx:id="deckToAddToBox" layoutX="916.0" layoutY="488.0" prefHeight="42.0" prefWidth="191.0">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Deck 1" />
+                                    <String fx:value="Deck 2" />
+                                    <String fx:value="Deck 3" />
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="29.0" layoutX="29.0" layoutY="22.0" stroke="BLACK" strokeType="INSIDE" width="296.0" />
                         <Label alignment="CENTER" layoutX="32.0" layoutY="23.0" prefHeight="27.0" prefWidth="288.0" text="Search Paramters">
                            <font>
