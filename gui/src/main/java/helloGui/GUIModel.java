@@ -1,6 +1,7 @@
 package helloGui;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -11,6 +12,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import shared.Card;
+import shared.Deck;
 
 
 import javax.imageio.ImageIO;
@@ -21,6 +23,9 @@ import static helloApi.HelloApi.advancedSearch;
 import static helloGui.GUIController.clearCardTypeArray;
 
 import static helloGui.GUIController.*;
+import static manager.DatabaseManager.loadObject;
+import static manager.DatabaseManager.saveObject;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -37,9 +42,11 @@ public class GUIModel {
     // List of types for user to choose from.
     public ComboBox<String> cardTypeCBox;
     // List of decks in database for user to choose from
-    public ComboBox<String> deckToAddToBox;
+    public ComboBox<Deck> deckToAddToBox;
     // List of rule sets for user to choose from.
     public ComboBox<String> ruleCBox;
+    // List of decks in database that the user can remove
+    public ComboBox<Deck> deckCBox;
     // A text area to display chosen types.
     public TextArea typeTxtArea;
     // A text area for the user to type a card name to search for.
@@ -71,10 +78,14 @@ public class GUIModel {
     public Spinner manaHigh;
     // A List View to show card results for the user to choose from.
     public ListView resultsListView;
+    public ListView deckDisplay;
+    public ListView deckCardDisplay;
 
     // allCardTypes is an ArrayList of types for the user to choose from.
     public static ArrayList<String> allCardTypes = getCardTypes();
 
+    // decks is an ArrayList of decks that the user can choose from
+    public static ArrayList<Deck> decks = new ArrayList<>();
 
 
 
@@ -103,6 +114,40 @@ public class GUIModel {
         typeTxtArea.setText(" ");
 
         }
+
+    // addNewDeck creates a new deck and saves it to the database
+    Integer newDeckId = 0;
+    public void addNewDeck(){
+        Deck newDeck = new Deck(newDeckNameTxtField.getText(), ruleCBox.getValue(), ++newDeckId, null);
+        decks.add(newDeck);
+        deckDisplay.getItems().add(newDeck);
+        deckCBox.setItems(deckDisplay.getItems());
+        deckToAddToBox.setItems(deckDisplay.getItems());
+
+    }
+
+    // removeDeck removes an existing deck and updates the database
+    public void removeDeck(){
+        decks.remove(deckCBox.getValue());
+        deckDisplay.getItems().remove(deckCBox.getValue());
+    }
+
+    public void addNewCard(){
+        Deck currentDeck = deckToAddToBox.getValue();
+        String cardName = resultsListView.getSelectionModel().getSelectedItem().toString();
+        Card cardToAdd = getCardFromSearchResults(cardName);
+        currentDeck.addCards(cardToAdd);
+        currentDeck.addCards(Card1);
+        ObservableList list = FXCollections.observableArrayList(currentDeck.getCards());
+        deckCardDisplay.setItems(list);
+    }
+
+    public void displayCardsInDeck(){
+        Deck currentDeck = (Deck) deckDisplay.getSelectionModel().getSelectedItem();
+        ObservableList list = FXCollections.observableArrayList(currentDeck.getCards());
+        deckCardDisplay.setItems(list);
+    }
+
     // showNewSearchPic changes the card image displayed to the user
     public void showNewSearchPic() throws IOException {
         String cardName = resultsListView.getSelectionModel().getSelectedItem().toString();

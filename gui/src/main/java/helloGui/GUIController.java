@@ -95,9 +95,14 @@ public class GUIController {
     public static Card getCardFromSearchResults(String cardName){
         int x = searchResultCards.size();
         for (int i = 0; i < x;i++){
-            if (searchResultCards.get(i).toString().equals(cardName)){Card cardToAdd = searchResultCards.get(i); System.out.println("Found it!"+cardToAdd.getImage());return cardToAdd;}
+            if (searchResultCards.get(i).toString().equals(cardName)){
+                Card cardToAdd = searchResultCards.get(i);
+                System.out.println("Found it!"+cardToAdd.getImage());
+                return cardToAdd;
+            }
         }
 
         return Card1;
     }
+
 }
