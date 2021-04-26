@@ -14,7 +14,7 @@ public class ManagerTest {
 
     @Table(name = "TestTable")
     public static class TestTable {
-        @Column(name = "username")
+        @Column(name = "username", unique = true)
         public String name = null;
         @Column(containsType = TestListElement.class)
         public ArrayList<TestListElement> list = null;
@@ -95,6 +95,15 @@ public class ManagerTest {
         var future = DatabaseManager.loadObject(searchTable);
 
         var result = future.get().get(0);
+        System.out.println(result.toString());
+        assert (result.equals(table));
+
+        table.list.clear();
+        table.list.add(new TestListElement("bla",312));
+        DatabaseManager.saveObject(table);
+
+        future = DatabaseManager.loadObject(searchTable);
+        result = future.get().get(0);
         System.out.println(result.toString());
         assert (result.equals(table));
     }
