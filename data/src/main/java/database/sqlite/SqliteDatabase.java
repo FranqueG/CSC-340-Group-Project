@@ -74,7 +74,7 @@ public class SqliteDatabase extends Database {
             var fields = Database.getColumns(_table);
 
             // create the table if it doesn't already exist
-            String tableName = annotation.name().equals("") ? _table.getClass().getName() : annotation.name();
+            String tableName = nameFromAnnotation(_table.getClass());
             String createSting = createTableString(tableName, fields);
             Statement statement = this.connection.createStatement();
             statement.execute(createSting);
@@ -107,7 +107,7 @@ public class SqliteDatabase extends Database {
             long rowId = preparedStatement.getGeneratedKeys().getLong(1);
             fields.values().stream().filter(ColumnData::isList).forEach((field) -> createList(field, rowId, tableName));
             return rowId;
-        } catch (IllegalAccessException | SQLException e) {
+        } catch (IllegalAccessException | SQLException | InvalidClassException e) {
             throw new DatabaseError("Unable to read field from table object! cause: " + e.getMessage());
         }
     }
