@@ -3,7 +3,9 @@ package shared;
 import annotations.Column;
 import annotations.Table;
 
-@Table
+import java.util.Objects;
+
+@Table(name = "Card")
 public class Card {
     @Column
     private String cardName;
@@ -31,6 +33,19 @@ public class Card {
     }
 
     public Card() {}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Card card = (Card) o;
+        return Objects.equals(cardId, card.cardId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(cardId);
+    }
 
     @Override
     public String toString() {

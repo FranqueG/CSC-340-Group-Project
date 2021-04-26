@@ -5,15 +5,15 @@ import annotations.Table;
 
 import java.util.ArrayList;
 
-@Table
+@Table(name = "Deck")
 public class Deck {
-    @Column
+    @Column(unique = true)
     private String deckName;
     @Column
     private String ruleSet;
     @Column(unique = true)
     private Integer deckId;
-    @Column
+    @Column(containsType = Card.class)
     private ArrayList<Card> cards;
 
     public Deck(String _name, String _ruleSet, Integer _deckId, ArrayList _cards) {
@@ -22,6 +22,11 @@ public class Deck {
         this.deckId = _deckId;
         this.cards = _cards;
     }
+
+    /**
+     * Empty constructor is necessary for the database to instantiate it
+     */
+    public Deck() {}
 
     @Override
     public String toString() { return deckName; }
