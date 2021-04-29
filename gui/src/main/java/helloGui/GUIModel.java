@@ -11,6 +11,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import manager.DatabaseManager;
 import shared.Card;
 import shared.Deck;
 
@@ -116,9 +117,9 @@ public class GUIModel {
         }
 
     // addNewDeck creates a new deck and saves it to the database
-    Integer newDeckId = 0;
+    Integer deckId = 0;
     public void addNewDeck(){
-        Deck newDeck = new Deck(newDeckNameTxtField.getText(), ruleCBox.getValue(), ++newDeckId, null);
+        Deck newDeck = new Deck(newDeckNameTxtField.getText(), ruleCBox.getValue(), ++deckId, null);
         decks.add(newDeck);
         deckDisplay.getItems().add(newDeck);
         deckCBox.setItems(deckDisplay.getItems());
@@ -132,18 +133,36 @@ public class GUIModel {
         deckDisplay.getItems().remove(deckCBox.getValue());
     }
 
-    public void addNewCard(){
+    public void addNewCard() throws IOException {
+        ArrayList<Card> cards = new ArrayList<>();
+        Card cardToAdd = Card1;
         Deck currentDeck = deckToAddToBox.getValue();
         String cardName = resultsListView.getSelectionModel().getSelectedItem().toString();
-        Card cardToAdd = getCardFromSearchResults(cardName);
-        currentDeck.addCards(cardToAdd);
-        currentDeck.addCards(Card1);
-        ObservableList list = FXCollections.observableArrayList(currentDeck.getCards());
-        deckCardDisplay.setItems(list);
+        int x = searchResultCards.size();
+        for (int i = 0; i < x;i++){
+            if (searchResultCards.get(i).toString().equals(cardName)){cardToAdd = searchResultCards.get(i); System.out.println("Found it!");}
+        }
+
+        //DatabaseManager.connectToDatabase();
+        cards.add(cardToAdd);
+        currentDeck.setCards(cards);
+        //DatabaseManager.saveObject(currentDeck);
+
+        //ObservableList list = FXCollections.observableArrayList(currentDeck.getCards());
+        //deckCardDisplay.getItems().add(cardToAdd);
+
+        //insertIntoDatabase(deckName,cardToAdd){stuff to do...}
+        // System.out.println("DN: "+deckName);
+        // System.out.println("CN: "+cardName);
+
+        //}
+
     }
 
     public void displayCardsInDeck(){
+        deckCardDisplay.getItems().removeAll();
         Deck currentDeck = (Deck) deckDisplay.getSelectionModel().getSelectedItem();
+        //DatabaseManager.loadObject(currentDeck);
         ObservableList list = FXCollections.observableArrayList(currentDeck.getCards());
         deckCardDisplay.setItems(list);
     }
@@ -152,6 +171,7 @@ public class GUIModel {
     public void showNewSearchPic() throws IOException {
         String cardName = resultsListView.getSelectionModel().getSelectedItem().toString();
         Card cardToShow = getCardFromSearchResults(cardName);
+        //Card cardToShow = (Card) resultsListView.getSelectionModel().getSelectedItem();
         WritableImage wr = getWritableImageFromURL(cardToShow);
         SearchPic.setImage(wr);
         }
