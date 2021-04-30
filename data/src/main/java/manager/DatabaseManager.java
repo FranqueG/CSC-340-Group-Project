@@ -111,11 +111,12 @@ public final class DatabaseManager {
     }
 
     /**
-     * Work in progress
+     * Delete the matching records in the database
+     * Dose not actually remove anything, instead simply sets the active column to 0
      * @param _obj object to use as a filter to delete records
      */
     public static void deleteObject(Object _obj) {
-        database.deactivate(_obj);
+        database.delete(_obj);
     }
 
     //This class is not meant to be instantiated

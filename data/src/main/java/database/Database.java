@@ -67,6 +67,11 @@ public abstract class Database {
                 selectFromDatabase(_obj));
     }
 
+    public final void delete(Object _obj) {
+        validate(_obj);
+        pool.submit(()-> deactivate(_obj));
+    }
+
     /**
      * Return the name of a @Table class
      * @param annotated the class
@@ -111,7 +116,7 @@ public abstract class Database {
      * Deactivates a record corresponding to the object given
      * @param _table the object to disable the record for
      */
-    public abstract void deactivate(Object _table);
+    protected abstract void deactivate(Object _table);
 
 
     /**
