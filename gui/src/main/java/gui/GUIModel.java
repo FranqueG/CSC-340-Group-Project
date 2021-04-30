@@ -100,7 +100,7 @@ public class GUIModel {
     //addTypeBtnClick adds a type to search for
     public void addTypeBtnClick(){
 
-        String newType = cardTypeCBox.getValue();
+        String newType = cardTypeCBox.getValue().trim();
         typeTxtArea.setText(" "+addToTypeArray(newType).toString().replaceAll("[ \\[ \\] \\,]"," "));
 
     }
@@ -113,8 +113,18 @@ public class GUIModel {
     }
 
     // addNewDeck creates a new deck and saves it to the database
-    public void addNewDeck() throws ExecutionException, InterruptedException {
-        Deck newDeck = new Deck(newDeckNameTxtField.getText(), ruleCBox.getValue(),null);
+    public void addNewDeck() {
+        Deck newDeck = new Deck(newDeckNameTxtField.getText().trim(), ruleCBox.getValue(),null);
+        for (var deck : decks) {
+            if(deck.getDeckName().equals(newDeck.getDeckName())) {
+                var alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Invalid deck name");
+                alert.setHeaderText("A deck with named "+newDeck.getDeckName()+" already exists!");
+                alert.setContentText("Please chose a different name for your deck.");
+                alert.show();
+                return;
+            }
+        }
         decks.add(newDeck);
         DatabaseManager.saveObjects(decks);
         deckDisplay.getItems().add(newDeck);
@@ -186,8 +196,8 @@ public class GUIModel {
    // searchBtnClick returns a new arraylist of card results, then sets resultsListView to display them
    public void searchBtnClick() {
 
-       String _parameterDescription = descriptionTxtArea.getText();
-       String  _parameterName = nameTxtArea.getText();
+       String _parameterDescription = descriptionTxtArea.getText().trim();
+       String  _parameterName = nameTxtArea.getText().trim();
        String _parameterIncludeColors = createColorString(greenY,redY,blackY,whiteY,blueY);
        String _parameterExcludeColors = createColorString(greenN,redN,blackN,whiteN,blueN);
        int _parameterManaMin = (int) manaLow.getValue();
