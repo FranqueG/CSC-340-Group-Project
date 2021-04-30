@@ -136,9 +136,11 @@ public class GUIModel {
     public void removeDeck() throws ExecutionException, InterruptedException {
         Deck currentDeck = deckCBox.getValue();
         Deck NewDeck = new Deck();
-        NewDeck.setDeckName(currentDeck.getDeckName());
-        DatabaseManager.deleteObject(NewDeck);
-        deckDisplay.getItems().remove(deckCBox.getValue());
+        if (currentDeck != null) {
+            NewDeck.setDeckName(currentDeck.getDeckName());
+            DatabaseManager.deleteObject(NewDeck);
+            deckDisplay.getItems().remove(deckCBox.getValue());
+        }
     }
 
     public void addNewCard() {
@@ -162,9 +164,11 @@ public class GUIModel {
     public void removeCard(){
         Deck currentDeck = (Deck) deckDisplay.getSelectionModel().getSelectedItem();
         Card selectedCard = (Card) deckCardDisplay.getSelectionModel().getSelectedItem();
-        currentDeck.removeCards(selectedCard);
-        DatabaseManager.deleteObject(selectedCard);
-        deckCardDisplay.getItems().remove(selectedCard);
+        if (currentDeck != null && selectedCard != null) {
+            currentDeck.removeCards(selectedCard);
+            DatabaseManager.deleteObject(selectedCard);
+            deckCardDisplay.getItems().remove(selectedCard);
+        }
         deckCardDisplay.refresh();
 
     }
