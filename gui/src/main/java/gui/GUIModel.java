@@ -92,6 +92,8 @@ public class GUIModel {
         }
 
         cardTypeCBox.setItems(FXCollections.observableList(allCardTypes));
+        deckCBox.setItems(deckDisplay.getItems());
+        deckToAddToBox.setItems(deckDisplay.getItems());
     }
 
 
@@ -152,6 +154,7 @@ public class GUIModel {
         Deck currentDeck = (Deck) deckDisplay.getSelectionModel().getSelectedItem();
         Card selectedCard = (Card) deckCardDisplay.getSelectionModel().getSelectedItem();
         currentDeck.removeCards(selectedCard);
+        DatabaseManager.deleteObject(selectedCard);
         deckCardDisplay.getItems().remove(selectedCard);
 
     }
@@ -159,15 +162,17 @@ public class GUIModel {
     public void displayCardsInDeck(){
         deckCardDisplay.getItems().removeAll();
         Deck currentDeck = (Deck) deckDisplay.getSelectionModel().getSelectedItem();
-        ObservableList list = FXCollections.observableArrayList(currentDeck.getCards());
+        ObservableList<Card> list = FXCollections.observableList(currentDeck.getCards());
         deckCardDisplay.setItems(list);
         deckCardDisplay.refresh();
     }
 
     public void showCardPic() throws IOException{
         Card cardToShow = (Card) deckCardDisplay.getSelectionModel().getSelectedItem();
-        WritableImage wr = getWritableImageFromURL(cardToShow);
-        CardInDeckPic.setImage(wr);
+        if (cardToShow != null) {
+            WritableImage wr = getWritableImageFromURL(cardToShow);
+            CardInDeckPic.setImage(wr);
+        }
     }
 
     // showNewSearchPic changes the card image displayed to the user
