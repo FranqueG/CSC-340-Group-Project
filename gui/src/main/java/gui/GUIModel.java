@@ -131,31 +131,20 @@ public class GUIModel {
     }
 
     public void addNewCard() {
-        ArrayList<Card> cards = new ArrayList<>();
         Card cardToAdd = Card1;
         Deck currentDeck = deckToAddToBox.getValue();
-        //cards = currentDeck.getCards();
+        if (currentDeck.getCards() == null){
+            currentDeck.setCards(new ArrayList<>());
+        }
+        var cards = currentDeck.getCards();
         String cardName = resultsListView.getSelectionModel().getSelectedItem().toString();
         int x = searchResultCards.size();
         for (int i = 0; i < x;i++){
             if (searchResultCards.get(i).toString().equals(cardName)){cardToAdd = searchResultCards.get(i); System.out.println("Found it!");}
         }
-        //loadObject(currentDeck);
+
         cards.add(cardToAdd);
-        currentDeck.setCards(cards);
         DatabaseManager.saveObject(currentDeck);
-        //decks.add(currentDeck);
-        //DatabaseManager.saveObject(decks);
-        //DatabaseManager.saveObject(currentDeck);
-
-        //ObservableList list = FXCollections.observableArrayList(currentDeck.getCards());
-        //deckCardDisplay.getItems().add(cardToAdd);
-
-        //insertIntoDatabase(deckName,cardToAdd){stuff to do...}
-        // System.out.println("DN: "+deckName);
-        // System.out.println("CN: "+cardName);
-
-        //}
 
     }
 
@@ -172,6 +161,7 @@ public class GUIModel {
         Deck currentDeck = (Deck) deckDisplay.getSelectionModel().getSelectedItem();
         ObservableList list = FXCollections.observableArrayList(currentDeck.getCards());
         deckCardDisplay.setItems(list);
+        deckCardDisplay.refresh();
     }
 
     public void showCardPic() throws IOException{
