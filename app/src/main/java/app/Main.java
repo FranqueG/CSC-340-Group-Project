@@ -8,7 +8,6 @@ import javafx.application.Application;
 import manager.DatabaseManager;
 
 
-//import static helloGui.TestPController.fillTypeComboBox;
 public class Main {
 
 
