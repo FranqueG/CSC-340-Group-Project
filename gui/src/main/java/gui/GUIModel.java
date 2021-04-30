@@ -94,9 +94,6 @@ public class GUIModel {
         cardTypeCBox.setItems(FXCollections.observableList(allCardTypes));
     }
 
-    public void updateApp{
-
-    }
 
     //addTypeBtnClick adds a type to search for
     public void addTypeBtnClick(){
