@@ -351,7 +351,7 @@ public class SqliteDatabase extends Database {
     protected void deactivate(Object _table) {
         try {
             var tableName = nameFromAnnotation(_table.getClass());
-            var builder = new StringBuilder("UPDATE " + tableName + " SET active=0 WHERE ");
+            var builder = new StringBuilder("DELETE FROM " + tableName + " WHERE ");
             // create query string
             var columns = getColumns(_table);
             for (var column : columns.entrySet()) {
