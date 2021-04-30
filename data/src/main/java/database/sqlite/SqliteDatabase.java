@@ -346,31 +346,28 @@ public class SqliteDatabase extends Database {
     }
 
     @Override
-    public void deactivate(Object _table) {
-        var annotation = _table.getClass().getAnnotation(Table.class);
-        if (annotation == null)
-            throw new DatabaseError("attempted to deactivate non-table object");
-        String tableName = annotation.name().equals("") ? _table.getClass().getName() : annotation.name();
-        var builder = new StringBuilder("UPDATE " + tableName + " SET active=0 WHERE ");
+    protected void deactivate(Object _table) {
         try {
+            var tableName = nameFromAnnotation(_table.getClass());
+            var builder = new StringBuilder("UPDATE " + tableName + " SET active=0 WHERE ");
             // create query string
             var columns = getColumns(_table);
             for (var column : columns.entrySet()) {
-                if (column.getValue().getData() != null)
+                if (column.getValue().getData() != null && !column.getValue().isList())
                     builder.append(column.getKey())
                             .append("=? AND ");
             }
             builder.append("active=1");
-
+            var query = builder.toString();
             // execute statement
-            var preparedStatement = this.connection.prepareStatement(builder.toString());
-            int i = 0;
+            var preparedStatement = this.connection.prepareStatement(query);
+            int i = 1;
             for (var data : columns.values()) {
-                if (data.getData() != null)
+                if (data.getData() != null && !data.isList())
                     preparedStatement.setObject(i++, data.getData());
             }
             preparedStatement.execute();
-        } catch (IllegalAccessException | SQLException e) {
+        } catch (IllegalAccessException | SQLException | InvalidClassException e) {
             e.printStackTrace();
         }
     }
@@ -380,7 +377,7 @@ public class SqliteDatabase extends Database {
         var name = nameFromAnnotation(_c);
         try {
             var statement = connection.createStatement();
-            statement.execute("DROP TABLE IF EXISTS "+name);
+            statement.execute("DROP TABLE IF EXISTS " + name);
         } catch (SQLException e) {
             e.printStackTrace();
         }
