@@ -12,6 +12,7 @@ import database.Database;
 import errors.DatabaseError;
 
 import java.io.InvalidClassException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.sql.*;
@@ -139,7 +140,7 @@ public class SqliteDatabase extends Database {
                 String createString = "CREATE TABLE IF NOT EXISTS " + tableName + "_" + _owningName +
                         "_join_table (" +
                         "parent INTEGER NOT NULL," +
-                        " child INTEGER UNIQUE NOT NULL," +
+                        " child INTEGER NOT NULL," +
                         " count INTEGER )";
                 statement.execute(createString);
 
@@ -174,8 +175,7 @@ public class SqliteDatabase extends Database {
     private static String createListInsertStatement(String _joinTableName) {
         return "INSERT INTO "
                 + _joinTableName
-                + " (parent,child,count) VALUES (?, ?, 1)\n"
-                + " ON CONFLICT(child) DO UPDATE SET count=count+1";
+                + " (parent,child) VALUES (?, ?)\n";
     }
 
     /**
@@ -376,6 +376,17 @@ public class SqliteDatabase extends Database {
     public void drop(Class<?> _c) throws InvalidClassException {
         var name = nameFromAnnotation(_c);
         try {
+            for(Field field : _c.getDeclaredFields()) {
+                var annotation = field.getAnnotation(Column.class);
+                if(annotation != null) {
+                    var fieldName = annotation.name().equals("") ? field.getName() : annotation.name();
+                    if (List.class.isAssignableFrom(field.getType())) {
+                        var statement = connection.createStatement();
+                        statement.execute("DROP TABLE IF EXISTS " + fieldName+"_"+name+"_join_table");
+                    }
+                }
+            }
+
             var statement = connection.createStatement();
             statement.execute("DROP TABLE IF EXISTS " + name);
         } catch (SQLException e) {

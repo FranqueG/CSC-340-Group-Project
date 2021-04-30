@@ -59,7 +59,6 @@ public class ManagerTest {
 
         //test the object loaded has the same column fields as the original
         var result = future.get().get(0);
-        System.out.println(result.toString());
         assert (result.equals(table));
         //test that non-columns are not saved
         assert(!table.notSaved.equals(result.notSaved));
@@ -72,7 +71,17 @@ public class ManagerTest {
         //confirm that the update has worked
         future = DatabaseManager.loadObject(searchTable);
         result = future.get().get(0);
-        System.out.println(result.toString());
+        assert (result.equals(table));
+
+        table.list.clear();
+        table.name = "bulk";
+        searchTable.name = "bulk";
+        //bulk list test
+        for(int i=0;i<100;i++)
+            table.list.add(new TestListElement("bla",i));
+        DatabaseManager.saveObject(table);
+        result = DatabaseManager.loadObject(searchTable).get().get(0);
+        System.out.println(result.list.size());
         assert (result.equals(table));
     }
 
