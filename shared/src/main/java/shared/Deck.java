@@ -16,7 +16,7 @@ public class Deck {
     @Column(containsType = Card.class)
     private ArrayList<Card> cards;
 
-    public Deck(String _name, String _ruleSet, Integer _deckId, ArrayList _cards) {
+    public Deck(String _name, String _ruleSet, Integer _deckId, ArrayList<Card> _cards) {
         this.deckName = _name;
         this.ruleSet = _ruleSet;
         this.deckId = _deckId;
@@ -30,9 +30,8 @@ public class Deck {
 
     @Override
     public String toString() { return deckName; }
-    public void addCards(Card _card) { cards.add(_card); }
-
-    public ArrayList<Card> getCards() {
-        return cards;
-    }
+    public void addCards(Card _card) { this.cards.add(_card); }
+    public ArrayList<Card> getCards() { return cards; }
+    public void setCards(ArrayList<Card> _cards){ this.cards = _cards; }
+    public void removeCards(Card _card) { this.cards.remove(_card); }
 }

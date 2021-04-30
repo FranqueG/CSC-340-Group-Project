@@ -20,7 +20,7 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="769.0" prefWidth="1183.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="helloGui.GUIModel">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="769.0" prefWidth="1183.0" xmlns="http://javafx.com/javafx/15" xmlns:fx="http://javafx.com/fxml/1" fx:controller="helloGui.GUIModel">
    <children>
       <TabPane maxHeight="659.0" maxWidth="600.0" prefHeight="659.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
@@ -39,7 +39,7 @@
                            </image></ImageView>
 
 
-                         <ListView fx:id="deckCardDisplay" layoutX="425.0" layoutY="87.0" prefHeight="471.0" prefWidth="296.0">
+                         <ListView fx:id="deckCardDisplay" layoutX="425.0" layoutY="87.0" onMouseClicked="#showCardPic" prefHeight="471.0" prefWidth="296.0">
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding></ListView>
@@ -47,7 +47,7 @@
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </padding></ListView>
-                         <Button fx:id="removeCardButton" layoutX="875.0" layoutY="508.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="144.0" text="Remove Card">
+                         <Button fx:id="removeCardButton" layoutX="875.0" layoutY="508.0" mnemonicParsing="false" onAction="#removeCard" prefHeight="41.0" prefWidth="144.0" text="Remove Card">
                            <font>
                               <Font size="18.0" />
                            </font></Button>
@@ -103,7 +103,7 @@
                            <font>
                               <Font size="18.0" />
                            </font></Button>
-                        <ImageView fitHeight="453.0" fitWidth="322.0" layoutX="787.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="CardInDeckPic" fitHeight="453.0" fitWidth="322.0" layoutX="787.0" layoutY="23.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@pics/CreepyDoll.jpg" />
                            </image></ImageView>
