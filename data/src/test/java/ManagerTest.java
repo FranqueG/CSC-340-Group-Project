@@ -1,5 +1,6 @@
 import annotations.Column;
 import annotations.Table;
+import errors.DatabaseError;
 import manager.DatabaseManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ManagerTest {
 
@@ -73,14 +76,42 @@ public class ManagerTest {
         }
     }
 
+    @Table(name="BasicTable")
+    public static class BasicTable {
+        @Column
+        public Integer num;
+
+        public String notSaved;
+    }
+
+    @Table(name = "MalformedTable")
+    public static class MalformedTable {
+        @Column
+        public int bad;
+        @Column
+        public String foo;
+    }
+
 
     @BeforeAll
     public static void setup() throws IOException {
         DatabaseManager.connectToDatabase();
+        DatabaseManager.testClearDatabase(TestTable.class,TestListElement.class,BasicTable.class);
     }
 
     @Test
-    public void RunTest() throws ExecutionException, InterruptedException {
+    public void basicTest() throws ExecutionException, InterruptedException {
+        var table = new BasicTable();
+        table.num = 34;
+        table.notSaved = "bla";
+        DatabaseManager.saveObject(table);
+        var result = DatabaseManager.loadObject(new BasicTable()).get().get(0);
+        assert(result.num.equals(table.num));
+        assert(!table.notSaved.equals(result.notSaved));
+    }
+
+    @Test
+    public void primaryTest() throws ExecutionException, InterruptedException {
         var table = new TestTable();
         var ls = new ArrayList<TestListElement>();
         ls.add(new TestListElement("first",3412));
@@ -108,5 +139,17 @@ public class ManagerTest {
         assert (result.equals(table));
     }
 
+
+    private static class NotATable { }
+
+    @Test
+    public void errorTest() {
+        //ensure the database rejects null objects
+        assertThrows(DatabaseError.class, ()-> DatabaseManager.saveObject(null));
+        //ensure the database rejects non-table objects
+        assertThrows(DatabaseError.class, ()-> DatabaseManager.saveObject(new NotATable()));
+
+        assertThrows(DatabaseError.class, ()->DatabaseManager.saveObject(new MalformedTable()));
+    }
 
 }
