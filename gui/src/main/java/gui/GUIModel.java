@@ -92,6 +92,8 @@ public class GUIModel {
         }
 
         cardTypeCBox.setItems(FXCollections.observableList(allCardTypes));
+        deckCBox.setItems(deckDisplay.getItems());
+        deckToAddToBox.setItems(deckDisplay.getItems());
     }
 
 
@@ -108,7 +110,7 @@ public class GUIModel {
         clearCardTypeArray();
         typeTxtArea.setText(" ");
 
-        }
+    }
 
     // addNewDeck creates a new deck and saves it to the database
     public void addNewDeck() throws ExecutionException, InterruptedException {
@@ -131,31 +133,20 @@ public class GUIModel {
     }
 
     public void addNewCard() {
-        ArrayList<Card> cards = new ArrayList<>();
         Card cardToAdd = Card1;
         Deck currentDeck = deckToAddToBox.getValue();
-        //cards = currentDeck.getCards();
+        if (currentDeck.getCards() == null){
+            currentDeck.setCards(new ArrayList<>());
+        }
+        var cards = currentDeck.getCards();
         String cardName = resultsListView.getSelectionModel().getSelectedItem().toString();
         int x = searchResultCards.size();
         for (int i = 0; i < x;i++){
             if (searchResultCards.get(i).toString().equals(cardName)){cardToAdd = searchResultCards.get(i); System.out.println("Found it!");}
         }
-        //loadObject(currentDeck);
+
         cards.add(cardToAdd);
-        currentDeck.setCards(cards);
         DatabaseManager.saveObject(currentDeck);
-        //decks.add(currentDeck);
-        //DatabaseManager.saveObject(decks);
-        //DatabaseManager.saveObject(currentDeck);
-
-        //ObservableList list = FXCollections.observableArrayList(currentDeck.getCards());
-        //deckCardDisplay.getItems().add(cardToAdd);
-
-        //insertIntoDatabase(deckName,cardToAdd){stuff to do...}
-        // System.out.println("DN: "+deckName);
-        // System.out.println("CN: "+cardName);
-
-        //}
 
     }
 
@@ -163,6 +154,7 @@ public class GUIModel {
         Deck currentDeck = (Deck) deckDisplay.getSelectionModel().getSelectedItem();
         Card selectedCard = (Card) deckCardDisplay.getSelectionModel().getSelectedItem();
         currentDeck.removeCards(selectedCard);
+        DatabaseManager.deleteObject(selectedCard);
         deckCardDisplay.getItems().remove(selectedCard);
 
     }
@@ -170,14 +162,17 @@ public class GUIModel {
     public void displayCardsInDeck(){
         deckCardDisplay.getItems().removeAll();
         Deck currentDeck = (Deck) deckDisplay.getSelectionModel().getSelectedItem();
-        ObservableList list = FXCollections.observableArrayList(currentDeck.getCards());
+        ObservableList<Card> list = FXCollections.observableList(currentDeck.getCards());
         deckCardDisplay.setItems(list);
+        deckCardDisplay.refresh();
     }
 
     public void showCardPic() throws IOException{
         Card cardToShow = (Card) deckCardDisplay.getSelectionModel().getSelectedItem();
-        WritableImage wr = getWritableImageFromURL(cardToShow);
-        CardInDeckPic.setImage(wr);
+        if (cardToShow != null) {
+            WritableImage wr = getWritableImageFromURL(cardToShow);
+            CardInDeckPic.setImage(wr);
+        }
     }
 
     // showNewSearchPic changes the card image displayed to the user
