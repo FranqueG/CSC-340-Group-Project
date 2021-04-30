@@ -14,6 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ManagerTest {
 
+    /**
+     * Connects to the database
+     * @throws IOException if the database file cannot be found/created
+     */
     @BeforeAll
     public static void setup() throws IOException {
         DatabaseManager.connectToDatabase();
@@ -22,8 +26,8 @@ public class ManagerTest {
 
     /**
      * Performs the most basic tests of saving and loading simple objects
-     * @throws ExecutionException
-     * @throws InterruptedException
+     * @throws ExecutionException if loading fails
+     * @throws InterruptedException if loading is interrupted
      */
     @Test
     public void basicTest() throws ExecutionException, InterruptedException {
@@ -101,7 +105,6 @@ public class ManagerTest {
     }
 
 
-    private static class NotATable { }
 
     /**
      * This tests that the database will throw the expected errors in case
@@ -116,7 +119,6 @@ public class ManagerTest {
         //ensure that a malformed table object will be rejected
         assertThrows(DatabaseError.class, ()->DatabaseManager.saveObject(new MalformedTable()));
     }
-
 
     @Table(name = "TestTable")
     public static class TestTable {
@@ -197,5 +199,6 @@ public class ManagerTest {
         public String foo;
     }
 
+    private static class NotATable { }
 
 }
