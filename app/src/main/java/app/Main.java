@@ -3,7 +3,7 @@ package app;
 //import helloGui.CardViewController;
 
 
-import helloGui.GUI;
+import gui.GUI;
 import javafx.application.Application;
 import manager.DatabaseManager;
 
