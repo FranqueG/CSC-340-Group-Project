@@ -212,32 +212,34 @@ public class SqliteDatabase extends Database {
         try {
             while (_result.next()) {
                 try {
-                    var obj = _class.getDeclaredConstructor().newInstance();
-                    for (var field : obj.getClass().getDeclaredFields()) {
-                        var annotation = field.getAnnotation(Column.class);
-                        if (annotation != null) {
-                            String fieldName = nameFromAnnotation(field);
-                            field.setAccessible(true);
-                            if (List.class.isAssignableFrom(field.getType())) {
-                                String tableName = nameFromAnnotation(obj.getClass());
-                                field.set(obj, field.getType().cast(
-                                        buildListFromResults(
-                                                tableName,
-                                                nameFromAnnotation(annotation.containsType()),
-                                                _result.getLong("rowid"),
-                                                annotation.containsType())
-                                        )
-                                );
-                            } else {
-                                try {
-                                    field.set(obj, field.getType().cast(_result.getObject(fieldName)));
-                                } catch (SQLException e) {
-                                    e.printStackTrace();
+                    if (_result.getLong("active") == 1) {
+                        var obj = _class.getDeclaredConstructor().newInstance();
+                        for (var field : obj.getClass().getDeclaredFields()) {
+                            var annotation = field.getAnnotation(Column.class);
+                            if (annotation != null) {
+                                String fieldName = nameFromAnnotation(field);
+                                field.setAccessible(true);
+                                if (List.class.isAssignableFrom(field.getType())) {
+                                    String tableName = nameFromAnnotation(obj.getClass());
+                                    field.set(obj, field.getType().cast(
+                                            buildListFromResults(
+                                                    tableName,
+                                                    nameFromAnnotation(annotation.containsType()),
+                                                    _result.getLong("rowid"),
+                                                    annotation.containsType())
+                                            )
+                                    );
+                                } else {
+                                    try {
+                                        field.set(obj, field.getType().cast(_result.getObject(fieldName)));
+                                    } catch (SQLException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             }
                         }
+                        ls.add(obj);
                     }
-                    ls.add(obj);
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | InvalidClassException e) {
                     e.printStackTrace();
                 }
@@ -376,13 +378,13 @@ public class SqliteDatabase extends Database {
     public void drop(Class<?> _c) throws InvalidClassException {
         var name = nameFromAnnotation(_c);
         try {
-            for(Field field : _c.getDeclaredFields()) {
+            for (Field field : _c.getDeclaredFields()) {
                 var annotation = field.getAnnotation(Column.class);
-                if(annotation != null) {
+                if (annotation != null) {
                     var fieldName = annotation.name().equals("") ? field.getName() : annotation.name();
                     if (List.class.isAssignableFrom(field.getType())) {
                         var statement = connection.createStatement();
-                        statement.execute("DROP TABLE IF EXISTS " + fieldName+"_"+name+"_join_table");
+                        statement.execute("DROP TABLE IF EXISTS " + fieldName + "_" + name + "_join_table");
                     }
                 }
             }
