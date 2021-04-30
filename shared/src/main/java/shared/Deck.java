@@ -25,6 +25,22 @@ public class Deck {
      */
     public Deck() {}
 
+    public String getDeckName() {
+        return deckName;
+    }
+
+    public void setDeckName(String deckName) {
+        this.deckName = deckName;
+    }
+
+    public String getRuleSet() {
+        return ruleSet;
+    }
+
+    public void setRuleSet(String ruleSet) {
+        this.ruleSet = ruleSet;
+    }
+
     @Override
     public String toString() { return deckName; }
     public void addCards(Card _card) { this.cards.add(_card); }

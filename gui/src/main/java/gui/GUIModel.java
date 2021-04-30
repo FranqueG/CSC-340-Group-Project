@@ -94,6 +94,10 @@ public class GUIModel {
         cardTypeCBox.setItems(FXCollections.observableList(allCardTypes));
     }
 
+    public void updateApp{
+
+    }
+
     //addTypeBtnClick adds a type to search for
     public void addTypeBtnClick(){
 
@@ -123,8 +127,9 @@ public class GUIModel {
     // removeDeck removes an existing deck and updates the database
     public void removeDeck() throws ExecutionException, InterruptedException {
         Deck currentDeck = deckCBox.getValue();
-        decks.remove(DatabaseManager.loadObject(currentDeck).get());
-        DatabaseManager.saveObjects(decks);
+        Deck NewDeck = new Deck();
+        NewDeck.setDeckName(currentDeck.getDeckName());
+        DatabaseManager.deleteObject(NewDeck);
         deckDisplay.getItems().remove(deckCBox.getValue());
     }
 
@@ -141,6 +146,7 @@ public class GUIModel {
         //loadObject(currentDeck);
         cards.add(cardToAdd);
         currentDeck.setCards(cards);
+        DatabaseManager.saveObject(currentDeck);
         //decks.add(currentDeck);
         //DatabaseManager.saveObject(decks);
         //DatabaseManager.saveObject(currentDeck);
