@@ -1,43 +1,21 @@
-package helloGui;
+package gui;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import manager.DatabaseManager;
 import shared.Card;
 import shared.Deck;
 
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-
-import static helloApi.HelloApi.getCardTypes;
-import static helloApi.HelloApi.advancedSearch;
-import static helloGui.GUIController.clearCardTypeArray;
-
-import static helloGui.GUIController.*;
-import static manager.DatabaseManager.loadObject;
-import static manager.DatabaseManager.saveObject;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.concurrent.Future;
+import java.util.concurrent.ExecutionException;
+
+import static api.Api.getCardTypes;
+import static gui.GUIController.*;
 
 public class GUIModel {
     @FXML

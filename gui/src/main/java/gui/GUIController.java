@@ -1,4 +1,4 @@
-package helloGui;
+package gui;
 
 import javafx.scene.control.ListView;
 import javafx.scene.image.PixelWriter;
@@ -13,9 +13,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
-import static helloApi.HelloApi.getCardTypes;
-
-import static helloApi.HelloApi.advancedSearch;
+import static api.Api.advancedSearch;
+import static api.Api.getCardTypes;
 public class GUIController {
     public ListView resultsListView;
     // searchResultCards is an ArrayList of card results from the API.
