@@ -33,4 +33,5 @@ public class Deck {
     public void addCards(Card _card) { this.cards.add(_card); }
     public ArrayList<Card> getCards() { return cards; }
     public void setCards(ArrayList<Card> _cards){ this.cards = _cards; }
+    public void removeCards(Card _card) { this.cards.remove(_card); }
 }
