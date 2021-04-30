@@ -26,7 +26,7 @@
 	urlcolor=blue,       
 }
 
-\newcommand{\javaversion}{10 }
+\newcommand{\javaversion}{11 }
 
 \setglossarysection{section}
 
@@ -106,7 +106,7 @@ The proposed project will be deployed as a desktop application; user input will 
 \section{Design and Implementation Constraints}
 Implementation will be completed using NetBeans/Intellij to build a suitable JFrame architecture. Ease of use is paramount, as many users are not technologically advanced, and will use the program recreationally. All card data needs to be pulled from an existing external database using API. All Deck data will be stored using a localized database. Excluding a card name, No other data on cards will be stored locally. Users need to be able browse and delete from their deck, as well as search and add new cards. Both of these functions will require comparing the card name in the local database, against the matching card name in the \acrshort{api} database. There also should be a feature that checks the validity of a card for a chosen rule set.  Adapters should be implemented to support future deployments.
 \section{Assumptions and Dependencies}
-The application is highly dependent on an external \acrshort{api}. It is assumed this database will continue to be available and accessible, without major changes in structure. Searching, and adding cards is entirely dependent on the external database, and will not work should that connection be broken. Displaying decks will likewise be unable to display the full details; however, in the interests of usability, users should still be able to retrieve cards in their existing decks using the localized database. The deletion of cards from decks is completely independent of the \acrshort{api}. The application's database is planned to be implemented using \gls{sqlite}, however it should not be strongly dependent on any particular database and should be designed to make it easy to change what kind of database is used if necessary.
+The application is highly dependent on an external \acrshort{api}. It is assumed this database will continue to be available and accessible, without major changes in structure. Searching, and adding cards is entirely dependent on the external database, and will not work should that connection be broken. Displaying decks will likewise be unable to display the full details; however, in the interests of usability, users should still be able to retrieve cards in their existing decks using the local database. The deletion of cards from decks is completely independent of the \acrshort{api}. The application's database is planned to be implemented using \gls{sqlite}, however it should not be strongly dependent on any particular database and should be designed to make it easy to change what kind of database is used if necessary.
 %3
 \chapter{Functional Requirements}
 \section{Primary}

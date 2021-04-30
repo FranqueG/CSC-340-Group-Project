@@ -12,6 +12,6 @@ module MTG.Deck.Builder.gui {
     requires MTG.Deck.Builder.api;
     requires MTG.Deck.Builder.data;
 
-    exports helloGui;
+    exports gui;
     
 }

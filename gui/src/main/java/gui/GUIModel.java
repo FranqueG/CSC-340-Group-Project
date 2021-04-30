@@ -1,4 +1,4 @@
-package helloGui;
+package gui;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,8 +14,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
-import static helloApi.HelloApi.getCardTypes;
-import static helloGui.GUIController.*;
+import static api.Api.getCardTypes;
+import static gui.GUIController.*;
 
 public class GUIModel {
     @FXML

@@ -1,4 +1,4 @@
-package helloApi;
+package api;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+public class Api {
 
 public class HelloApi {
     public static void helloApi() {
