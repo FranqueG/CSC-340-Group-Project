@@ -35,11 +35,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.concurrent.Future;
 
 public class GUIModel {
     @FXML
     // Picture of selected card.
     public ImageView SearchPic;
+    // Picture of selected card in specific deck
+    public ImageView CardInDeckPic;
     // List of types for user to choose from.
     public ComboBox<String> cardTypeCBox;
     // List of decks in database for user to choose from
@@ -88,16 +91,19 @@ public class GUIModel {
     // decks is an ArrayList of decks that the user can choose from
     public static ArrayList<Deck> decks = new ArrayList<>();
 
-
+    //ArrayList<Card> cards = new ArrayList<>();
 
     // these are dummy cards... Card1 is used to return null values...
     public Card Card1 = new Card("","Card1","","",1,"","","");
     public Card Card2 = new Card("","Card2","","",1,"","","");
 
+
     @FXML
     //initialize fills cardTypeCBox with types for the user to choose from.
     public void initialize() {
-
+        //DatabaseManager.loadObjects(decks);
+        ObservableList list = FXCollections.observableArrayList(DatabaseManager.loadObjects(decks));
+        deckDisplay.setItems(list);
         cardTypeCBox.setItems(FXCollections.observableList(allCardTypes));
     }
 
@@ -121,6 +127,8 @@ public class GUIModel {
     public void addNewDeck(){
         Deck newDeck = new Deck(newDeckNameTxtField.getText(), ruleCBox.getValue(), ++deckId, null);
         decks.add(newDeck);
+        //DatabaseManager.saveObject(newDeck);
+        DatabaseManager.saveObjects(decks);
         deckDisplay.getItems().add(newDeck);
         deckCBox.setItems(deckDisplay.getItems());
         deckToAddToBox.setItems(deckDisplay.getItems());
@@ -129,23 +137,26 @@ public class GUIModel {
 
     // removeDeck removes an existing deck and updates the database
     public void removeDeck(){
+
         decks.remove(deckCBox.getValue());
         deckDisplay.getItems().remove(deckCBox.getValue());
     }
 
-    public void addNewCard() throws IOException {
+    public void addNewCard() {
         ArrayList<Card> cards = new ArrayList<>();
         Card cardToAdd = Card1;
         Deck currentDeck = deckToAddToBox.getValue();
+        //cards = currentDeck.getCards();
         String cardName = resultsListView.getSelectionModel().getSelectedItem().toString();
         int x = searchResultCards.size();
         for (int i = 0; i < x;i++){
             if (searchResultCards.get(i).toString().equals(cardName)){cardToAdd = searchResultCards.get(i); System.out.println("Found it!");}
         }
-
-        //DatabaseManager.connectToDatabase();
+        //loadObject(currentDeck);
         cards.add(cardToAdd);
         currentDeck.setCards(cards);
+        //decks.add(currentDeck);
+        //DatabaseManager.saveObject(decks);
         //DatabaseManager.saveObject(currentDeck);
 
         //ObservableList list = FXCollections.observableArrayList(currentDeck.getCards());
@@ -159,12 +170,25 @@ public class GUIModel {
 
     }
 
+    public void removeCard(){
+        Deck currentDeck = (Deck) deckDisplay.getSelectionModel().getSelectedItem();
+        Card selectedCard = (Card) deckCardDisplay.getSelectionModel().getSelectedItem();
+        currentDeck.removeCards(selectedCard);
+        deckCardDisplay.getItems().remove(selectedCard);
+
+    }
+
     public void displayCardsInDeck(){
         deckCardDisplay.getItems().removeAll();
         Deck currentDeck = (Deck) deckDisplay.getSelectionModel().getSelectedItem();
-        //DatabaseManager.loadObject(currentDeck);
         ObservableList list = FXCollections.observableArrayList(currentDeck.getCards());
         deckCardDisplay.setItems(list);
+    }
+
+    public void showCardPic() throws IOException{
+        Card cardToShow = (Card) deckCardDisplay.getSelectionModel().getSelectedItem();
+        WritableImage wr = getWritableImageFromURL(cardToShow);
+        CardInDeckPic.setImage(wr);
     }
 
     // showNewSearchPic changes the card image displayed to the user
