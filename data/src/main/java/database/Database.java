@@ -67,14 +67,23 @@ public abstract class Database {
                 selectFromDatabase(_obj));
     }
 
+    /**
+     * Remove a object from the database
+     * @param _obj the object to use as a filter
+     */
     public final void delete(Object _obj) {
         validate(_obj);
         pool.submit(()-> deactivate(_obj));
     }
 
+    /**
+     * Shutdown the database thread pool.
+     * Must be called once before exiting the program
+     */
     public void shutdown() {
         pool.shutdown();
     }
+
     /**
      * Return the name of a @Table class
      * @param annotated the class
@@ -167,6 +176,11 @@ public abstract class Database {
         return fieldMap;
     }
 
+    /**
+     * Validates that an object can be saved/loaded in the database. Will
+     * throw an error if it's not
+     * @param _obj the object to validate
+     */
     private void validate(Object _obj) {
         if(_obj == null)
             throw new DatabaseError("A input object was null!");

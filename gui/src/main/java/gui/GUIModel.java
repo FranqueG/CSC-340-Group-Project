@@ -73,7 +73,7 @@ public class GUIModel {
 
     //ArrayList<Card> cards = new ArrayList<>();
 
-    public Deck Deck1 = new Deck(null, null, null,null);
+    public Deck Deck1 = new Deck(null, null, null);
 
     // these are dummy cards... Card1 is used to return null values...
     public Card Card1 = new Card("","Card1","","",1,"","","");
@@ -94,6 +94,7 @@ public class GUIModel {
         cardTypeCBox.setItems(FXCollections.observableList(allCardTypes));
     }
 
+
     //addTypeBtnClick adds a type to search for
     public void addTypeBtnClick(){
 
@@ -110,9 +111,8 @@ public class GUIModel {
         }
 
     // addNewDeck creates a new deck and saves it to the database
-    Integer deckId = 0;
     public void addNewDeck() throws ExecutionException, InterruptedException {
-        Deck newDeck = new Deck(newDeckNameTxtField.getText(), ruleCBox.getValue(), ++deckId, null);
+        Deck newDeck = new Deck(newDeckNameTxtField.getText(), ruleCBox.getValue(),null);
         decks.add(newDeck);
         DatabaseManager.saveObjects(decks);
         deckDisplay.getItems().add(newDeck);
@@ -124,8 +124,9 @@ public class GUIModel {
     // removeDeck removes an existing deck and updates the database
     public void removeDeck() throws ExecutionException, InterruptedException {
         Deck currentDeck = deckCBox.getValue();
-        decks.remove(DatabaseManager.loadObject(currentDeck).get());
-        DatabaseManager.saveObjects(decks);
+        Deck NewDeck = new Deck();
+        NewDeck.setDeckName(currentDeck.getDeckName());
+        DatabaseManager.deleteObject(NewDeck);
         deckDisplay.getItems().remove(deckCBox.getValue());
     }
 
@@ -142,6 +143,7 @@ public class GUIModel {
         //loadObject(currentDeck);
         cards.add(cardToAdd);
         currentDeck.setCards(cards);
+        DatabaseManager.saveObject(currentDeck);
         //decks.add(currentDeck);
         //DatabaseManager.saveObject(decks);
         //DatabaseManager.saveObject(currentDeck);
