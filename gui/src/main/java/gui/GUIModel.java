@@ -113,8 +113,18 @@ public class GUIModel {
     }
 
     // addNewDeck creates a new deck and saves it to the database
-    public void addNewDeck() throws ExecutionException, InterruptedException {
+    public void addNewDeck() {
         Deck newDeck = new Deck(newDeckNameTxtField.getText().trim(), ruleCBox.getValue(),null);
+        for (var deck : decks) {
+            if(deck.getDeckName().equals(newDeck.getDeckName())) {
+                var alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Invalid deck name");
+                alert.setHeaderText("A deck with named "+newDeck.getDeckName()+" already exists!");
+                alert.setContentText("Please chose a different name for your deck.");
+                alert.show();
+                return;
+            }
+        }
         decks.add(newDeck);
         DatabaseManager.saveObjects(decks);
         deckDisplay.getItems().add(newDeck);
