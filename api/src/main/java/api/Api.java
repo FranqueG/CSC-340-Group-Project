@@ -11,11 +11,6 @@ import java.net.URL;
 import java.util.ArrayList;
 public class Api {
 
-public class HelloApi {
-    public static void helloApi() {
-        System.out.println("Hello from api");
-    }
-
     public static String baseURL = "https://api.scryfall.com";
 
     /**
