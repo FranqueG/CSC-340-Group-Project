@@ -12,6 +12,7 @@ import database.Database;
 import errors.DatabaseError;
 
 import java.io.InvalidClassException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.sql.*;
@@ -54,7 +55,7 @@ public class SqliteDatabase extends Database {
             for (var field : searchFields.values()) {
                 try {
                     statement.setObject(++i, field.getData());
-                } catch (ArrayIndexOutOfBoundsException e){
+                } catch (ArrayIndexOutOfBoundsException e) {
                     break;
                 }
             }
@@ -135,17 +136,16 @@ public class SqliteDatabase extends Database {
                 statement.execute(tableString);
 
 
-
                 //create join table linking list and the elements
                 String createString = "CREATE TABLE IF NOT EXISTS " + tableName + "_" + _owningName +
                         "_join_table (" +
                         "parent INTEGER NOT NULL," +
-                        " child INTEGER UNIQUE NOT NULL," +
+                        " child INTEGER NOT NULL," +
                         " count INTEGER )";
                 statement.execute(createString);
 
                 //Clear existing join table
-                statement.execute("DELETE FROM "+tableName+"_"+_owningName+"_join_table " +"WHERE parent="+_owningTable+";");
+                statement.execute("DELETE FROM " + tableName + "_" + _owningName + "_join_table " + "WHERE parent=" + _owningTable + ";");
 
                 for (Object element : ls) {
 
@@ -175,8 +175,7 @@ public class SqliteDatabase extends Database {
     private static String createListInsertStatement(String _joinTableName) {
         return "INSERT INTO "
                 + _joinTableName
-                + " (parent,child,count) VALUES (?, ?, 1)\n"
-                + " ON CONFLICT(child) DO UPDATE SET count=count+1";
+                + " (parent,child) VALUES (?, ?)\n";
     }
 
     /**
@@ -229,8 +228,7 @@ public class SqliteDatabase extends Database {
                                                 annotation.containsType())
                                         )
                                 );
-                            }
-                            else {
+                            } else {
                                 try {
                                     field.set(obj, field.getType().cast(_result.getObject(fieldName)));
                                 } catch (SQLException e) {
@@ -252,7 +250,7 @@ public class SqliteDatabase extends Database {
 
     private <T> ArrayList<T> buildListFromResults(String _parentTable, String _childName, long _parentId, Class<T> _listField) throws SQLException {
         var joinTableName = _childName + "_" + _parentTable + "_join_table";
-        String query = "SELECT * FROM " + joinTableName  + " INNER JOIN " + _childName + " ON " + _childName + ".rowid = " + joinTableName + ".child " + " WHERE parent=? ;";
+        String query = "SELECT * FROM " + joinTableName + " INNER JOIN " + _childName + " ON " + _childName + ".rowid = " + joinTableName + ".child " + " WHERE parent=? ;";
         var statement = connection.prepareStatement(query);
         statement.setLong(1, _parentId);
         var lsResult = statement.executeQuery();
@@ -264,7 +262,7 @@ public class SqliteDatabase extends Database {
                     var obj = _listField.getDeclaredConstructor().newInstance();
                     for (var field : _listField.getDeclaredFields()) {
                         var annotation = field.getAnnotation(Column.class);
-                        if(annotation != null) {
+                        if (annotation != null) {
                             String fieldName = annotation.name().equals("") ? field.getName() : annotation.name();
                             field.setAccessible(true);
                             var value = lsResult.getObject(fieldName);
@@ -348,31 +346,50 @@ public class SqliteDatabase extends Database {
     }
 
     @Override
-    public void deactivate(Object _table) {
-        var annotation = _table.getClass().getAnnotation(Table.class);
-        if (annotation == null)
-            throw new DatabaseError("attempted to deactivate non-table object");
-        String tableName = annotation.name().equals("") ? _table.getClass().getName() : annotation.name();
-        var builder = new StringBuilder("UPDATE " + tableName + " SET active=0 WHERE ");
+    protected void deactivate(Object _table) {
         try {
+            var tableName = nameFromAnnotation(_table.getClass());
+            var builder = new StringBuilder("UPDATE " + tableName + " SET active=0 WHERE ");
             // create query string
             var columns = getColumns(_table);
             for (var column : columns.entrySet()) {
-                if (column.getValue().getData() != null)
+                if (column.getValue().getData() != null && !column.getValue().isList())
                     builder.append(column.getKey())
                             .append("=? AND ");
             }
             builder.append("active=1");
-
+            var query = builder.toString();
             // execute statement
-            var preparedStatement = this.connection.prepareStatement(builder.toString());
-            int i = 0;
+            var preparedStatement = this.connection.prepareStatement(query);
+            int i = 1;
             for (var data : columns.values()) {
-                if (data.getData() != null)
+                if (data.getData() != null && !data.isList())
                     preparedStatement.setObject(i++, data.getData());
             }
             preparedStatement.execute();
-        } catch (IllegalAccessException | SQLException e) {
+        } catch (IllegalAccessException | SQLException | InvalidClassException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void drop(Class<?> _c) throws InvalidClassException {
+        var name = nameFromAnnotation(_c);
+        try {
+            for(Field field : _c.getDeclaredFields()) {
+                var annotation = field.getAnnotation(Column.class);
+                if(annotation != null) {
+                    var fieldName = annotation.name().equals("") ? field.getName() : annotation.name();
+                    if (List.class.isAssignableFrom(field.getType())) {
+                        var statement = connection.createStatement();
+                        statement.execute("DROP TABLE IF EXISTS " + fieldName+"_"+name+"_join_table");
+                    }
+                }
+            }
+
+            var statement = connection.createStatement();
+            statement.execute("DROP TABLE IF EXISTS " + name);
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

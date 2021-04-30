@@ -4,6 +4,7 @@ import database.Database;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.InvalidClassException;
 import java.util.ArrayList;
 
 public class ReflectionTest extends Database {
@@ -33,6 +34,11 @@ public class ReflectionTest extends Database {
 
     @Override
     public void deactivate(Object _table) {
+        // do nothing
+    }
+
+    @Override
+    public void drop(Class<?> _c) throws InvalidClassException {
         // do nothing
     }
 
