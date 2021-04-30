@@ -1,6 +1,6 @@
 package manager;
 /*
- * Last updated: 4/23/2021
+ * Last updated: 4/29/2021
  * This class manages access to the database
  * Authors: Joshua Millikan
  */

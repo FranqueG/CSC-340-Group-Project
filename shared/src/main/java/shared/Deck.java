@@ -11,15 +11,12 @@ public class Deck {
     private String deckName;
     @Column
     private String ruleSet;
-    @Column(unique = true)
-    private Integer deckId;
     @Column(containsType = Card.class)
     private ArrayList<Card> cards;
 
-    public Deck(String _name, String _ruleSet, Integer _deckId, ArrayList<Card> _cards) {
+    public Deck(String _name, String _ruleSet, ArrayList<Card> _cards) {
         this.deckName = _name;
         this.ruleSet = _ruleSet;
-        this.deckId = _deckId;
         this.cards = _cards;
     }
 
