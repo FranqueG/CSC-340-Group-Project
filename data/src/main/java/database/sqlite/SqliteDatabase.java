@@ -54,7 +54,7 @@ public class SqliteDatabase extends Database {
             for (var field : searchFields.values()) {
                 try {
                     statement.setObject(++i, field.getData());
-                } catch (ArrayIndexOutOfBoundsException e){
+                } catch (ArrayIndexOutOfBoundsException e) {
                     break;
                 }
             }
@@ -135,7 +135,6 @@ public class SqliteDatabase extends Database {
                 statement.execute(tableString);
 
 
-
                 //create join table linking list and the elements
                 String createString = "CREATE TABLE IF NOT EXISTS " + tableName + "_" + _owningName +
                         "_join_table (" +
@@ -145,7 +144,7 @@ public class SqliteDatabase extends Database {
                 statement.execute(createString);
 
                 //Clear existing join table
-                statement.execute("DELETE FROM "+tableName+"_"+_owningName+"_join_table " +"WHERE parent="+_owningTable+";");
+                statement.execute("DELETE FROM " + tableName + "_" + _owningName + "_join_table " + "WHERE parent=" + _owningTable + ";");
 
                 for (Object element : ls) {
 
@@ -229,8 +228,7 @@ public class SqliteDatabase extends Database {
                                                 annotation.containsType())
                                         )
                                 );
-                            }
-                            else {
+                            } else {
                                 try {
                                     field.set(obj, field.getType().cast(_result.getObject(fieldName)));
                                 } catch (SQLException e) {
@@ -252,7 +250,7 @@ public class SqliteDatabase extends Database {
 
     private <T> ArrayList<T> buildListFromResults(String _parentTable, String _childName, long _parentId, Class<T> _listField) throws SQLException {
         var joinTableName = _childName + "_" + _parentTable + "_join_table";
-        String query = "SELECT * FROM " + joinTableName  + " INNER JOIN " + _childName + " ON " + _childName + ".rowid = " + joinTableName + ".child " + " WHERE parent=? ;";
+        String query = "SELECT * FROM " + joinTableName + " INNER JOIN " + _childName + " ON " + _childName + ".rowid = " + joinTableName + ".child " + " WHERE parent=? ;";
         var statement = connection.prepareStatement(query);
         statement.setLong(1, _parentId);
         var lsResult = statement.executeQuery();
@@ -264,7 +262,7 @@ public class SqliteDatabase extends Database {
                     var obj = _listField.getDeclaredConstructor().newInstance();
                     for (var field : _listField.getDeclaredFields()) {
                         var annotation = field.getAnnotation(Column.class);
-                        if(annotation != null) {
+                        if (annotation != null) {
                             String fieldName = annotation.name().equals("") ? field.getName() : annotation.name();
                             field.setAccessible(true);
                             var value = lsResult.getObject(fieldName);
@@ -373,6 +371,17 @@ public class SqliteDatabase extends Database {
             }
             preparedStatement.execute();
         } catch (IllegalAccessException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void drop(Class<?> _c) throws InvalidClassException {
+        var name = nameFromAnnotation(_c);
+        try {
+            var statement = connection.createStatement();
+            statement.execute("DROP TABLE IF EXISTS "+name);
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
