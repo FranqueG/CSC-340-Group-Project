@@ -1,5 +1,6 @@
 package database;
 /*
+ * Last updated: 4/23/2021
  * This class represents an abstract database connection
  * Authors: Joshua Millikan
  */
@@ -7,6 +8,8 @@ package database;
 import annotations.Column;
 import annotations.Table;
 
+import java.io.InvalidClassException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -14,25 +17,24 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public abstract class Database {
-    private static final ExecutorService pool = Executors.newWorkStealingPool();
+    private static final ExecutorService pool = Executors.newSingleThreadExecutor();
 
     /**
      * Save a collection of objects to the database
      * @param _objects collection of objects
      * @param <T> object type
      */
-    public <T> void saveObjects(Collection<T> _objects) {
-        pool.execute(() -> {
+    public final <T> void saveObjects(Collection<T> _objects) {
             for(Object obj : _objects)
-                updateInsert(obj);
-        });
+                //pool.submit(()->
+                        updateInsert(obj);
     }
 
     /**
      * Save an object to the database
      * @param _obj object to save
      */
-    public void saveObject(Object _obj) {
+    public final void saveObject(Object _obj) {
         saveObjects(Collections.singletonList(_obj));
     }
 
@@ -42,8 +44,8 @@ public abstract class Database {
      * @param <T> the object type
      * @return array list of futures that will contain the objects found
      */
-    public <T> ArrayList<Future<List<T>>> loadObjects(Collection<T> _objs) {
-        var ls = new ArrayList<Future<List<T>>>();
+    public final <T> ArrayList<Future<ArrayList<T>>> loadObjects(Collection<T> _objs) {
+        var ls = new ArrayList<Future<ArrayList<T>>>();
         for (T object : _objs) {
             var future = pool.submit(() -> selectFromDatabase(object));
             ls.add(future);
@@ -56,8 +58,23 @@ public abstract class Database {
      * @param _obj the object to search for
      * @return future that will contain the list of results
      */
-    public <T> Future<List<T>> loadObject(T _obj) {
-        return pool.submit(() -> selectFromDatabase(_obj));
+    public final <T> Future<ArrayList<T>> loadObject(T _obj) {
+        return pool.submit(() ->
+                selectFromDatabase(_obj));
+    }
+
+    protected static String nameFromAnnotation(Class<?> annotated) throws InvalidClassException {
+        var annotation = annotated.getAnnotation(Table.class);
+        if(annotation == null)
+            throw new InvalidClassException("Class is not a table");
+        return annotation.name().equals("") ? annotated.getName() : annotation.name();
+    }
+
+    protected static String nameFromAnnotation(Field annotated) throws InvalidClassException {
+        var annotation = annotated.getAnnotation(Column.class);
+        if(annotation == null)
+            throw new InvalidClassException("Field is not a Column");
+        return annotation.name().equals("") ? annotated.getName() : annotation.name();
     }
 
     /**
@@ -65,14 +82,20 @@ public abstract class Database {
      * @param _obj object to use as a template for the request, each non-null field will be used in the select statement
      * @return all objects in the database the matched the request
      */
-    protected abstract <T> List<T> selectFromDatabase(T _obj);
+    protected abstract <T> ArrayList<T> selectFromDatabase(T _obj);
 
     /**
      * Inserts a object into the table
      *
      * @param _table object representing a table, it's class must be annotated with @Table
      */
-    protected abstract int updateInsert(Object _table);
+    protected abstract long updateInsert(Object _table);
+
+    /**
+     * Deactivates a record corresponding to the object given
+     * @param _table the object to disable the record for
+     */
+    public abstract void deactivate(Object _table);
 
     /**
      * Reads a object as a table using reflection
@@ -93,11 +116,12 @@ public abstract class Database {
                 var fieldName = fieldAnnotation.name();
                 if (fieldName.equals(""))
                     fieldName = field.getName();
-                boolean nestedTable = field.getType().getAnnotation(Table.class) != null;
-                boolean list = field.getType().isAssignableFrom(List.class);
 
+                boolean nestedTable = field.getType().getAnnotation(Table.class) != null;
+                var obj = field.get(_table);
+                boolean list = fieldAnnotation.containsType() != Object.class;
                 var data = new ColumnData(
-                        field.get(_table),
+                        obj,
                         field.getType(),
                         fieldAnnotation.notNull(),
                         fieldAnnotation.unique(),
