@@ -42,6 +42,11 @@ public class ReflectionTest extends Database {
         // do nothing
     }
 
+    /**
+     * Basic test the shows that the database
+     * reflection system works
+     * @throws IllegalAccessException if reflection access fails
+      */
     @Test
     @DisplayName("Testing ability to read fields in a table class")
     public void reflectionTest() throws IllegalAccessException {

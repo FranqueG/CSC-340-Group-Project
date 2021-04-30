@@ -18,6 +18,11 @@ public class DeckTest {
     }
 
 
+    /**
+     * This shows that database operations on deck objects work
+     * @throws ExecutionException if loading fails
+     * @throws InterruptedException if loading is interrupted
+     */
     @Test
     public void deckTest() throws ExecutionException, InterruptedException {
         var cards = new ArrayList<Card>();
