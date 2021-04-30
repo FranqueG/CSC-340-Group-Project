@@ -159,7 +159,7 @@ public class GUIModel {
         cards.add(cardToAdd);
         DatabaseManager.saveObject(currentDeck);
 
-    }
+    } 
 
     public void removeCard(){
         Deck currentDeck = (Deck) deckDisplay.getSelectionModel().getSelectedItem();
