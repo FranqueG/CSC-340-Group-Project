@@ -120,7 +120,6 @@ public class GUIModel {
         deckDisplay.getItems().add(newDeck);
         deckCBox.setItems(deckDisplay.getItems());
         deckToAddToBox.setItems(deckDisplay.getItems());
-
     }
 
     // removeDeck removes an existing deck and updates the database
@@ -156,14 +155,17 @@ public class GUIModel {
         currentDeck.removeCards(selectedCard);
         DatabaseManager.deleteObject(selectedCard);
         deckCardDisplay.getItems().remove(selectedCard);
+        deckCardDisplay.refresh();
 
     }
 
     public void displayCardsInDeck(){
         deckCardDisplay.getItems().removeAll();
         Deck currentDeck = (Deck) deckDisplay.getSelectionModel().getSelectedItem();
-        ObservableList<Card> list = FXCollections.observableList(currentDeck.getCards());
-        deckCardDisplay.setItems(list);
+        if (currentDeck != null && currentDeck.getCards() != null) {
+            ObservableList<Card> list = FXCollections.observableList(currentDeck.getCards());
+            deckCardDisplay.setItems(list);
+        }
         deckCardDisplay.refresh();
     }
 
