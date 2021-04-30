@@ -94,9 +94,6 @@ public class GUIModel {
         cardTypeCBox.setItems(FXCollections.observableList(allCardTypes));
     }
 
-    public void updateApp{
-
-    }
 
     //addTypeBtnClick adds a type to search for
     public void addTypeBtnClick(){
@@ -111,7 +108,7 @@ public class GUIModel {
         clearCardTypeArray();
         typeTxtArea.setText(" ");
 
-        }
+    }
 
     // addNewDeck creates a new deck and saves it to the database
     public void addNewDeck() throws ExecutionException, InterruptedException {
