@@ -108,7 +108,7 @@ public class GUIModel {
         clearCardTypeArray();
         typeTxtArea.setText(" ");
 
-        }
+    }
 
     // addNewDeck creates a new deck and saves it to the database
     public void addNewDeck() throws ExecutionException, InterruptedException {
