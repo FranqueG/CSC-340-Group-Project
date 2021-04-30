@@ -1,6 +1,6 @@
 package database.sqlite;
 /*
- * Last updated: 4/23/2021
+ * Last updated: 4/29/2021
  * This class represents a connection to a SQLite database and is responsible for
  * saving and loading data to the disk through it.
  * Authors: Joshua Millikan
@@ -187,7 +187,6 @@ public class SqliteDatabase extends Database {
      */
     private static String createSelectString(String _tableName, Map<String, ColumnData> _searchFields) {
         var builder = new StringBuilder("SELECT rowid, * FROM ").append(_tableName);
-        StringBuilder tail = new StringBuilder();
         if (_searchFields.size() > 0) {
             builder.append(" WHERE ");
             for (var field : _searchFields.entrySet()) {
@@ -197,7 +196,6 @@ public class SqliteDatabase extends Database {
             }
             builder.append("active=1 ");
         }
-        builder.append(tail);
         return builder.toString();
     }
 
@@ -219,6 +217,8 @@ public class SqliteDatabase extends Database {
                             if (annotation != null) {
                                 String fieldName = nameFromAnnotation(field);
                                 field.setAccessible(true);
+
+                                //if its a list
                                 if (List.class.isAssignableFrom(field.getType())) {
                                     String tableName = nameFromAnnotation(obj.getClass());
                                     field.set(obj, field.getType().cast(
@@ -229,13 +229,11 @@ public class SqliteDatabase extends Database {
                                                     annotation.containsType())
                                             )
                                     );
-                                } else {
-                                    try {
-                                        field.set(obj, field.getType().cast(_result.getObject(fieldName)));
-                                    } catch (SQLException e) {
-                                        e.printStackTrace();
-                                    }
                                 }
+                                // else just set the field
+                                else
+                                    field.set(obj, field.getType().cast(_result.getObject(fieldName)));
+
                             }
                         }
                         ls.add(obj);
@@ -347,6 +345,11 @@ public class SqliteDatabase extends Database {
         }
     }
 
+    /**
+     * deletes a record from the database. Originally set active=0,
+     * but there were issues with that so it just deletes it now.
+     * @param _table the object to delete the record for
+     */
     @Override
     protected void deactivate(Object _table) {
         try {
