@@ -5,6 +5,7 @@ package app;
 
 import helloGui.Example;
 import javafx.application.Application;
+import manager.DatabaseManager;
 
 
 import static helloApi.HelloApi.helloApi;
@@ -19,6 +20,7 @@ public class Main {
         System.out.println("Hello from main");
         helloApi();
         helloGui();
+        DatabaseManager.connectToDatabase();
 
         Application.launch(Example.class, args);
 //        fillTypeComboBox();

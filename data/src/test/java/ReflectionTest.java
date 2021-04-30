@@ -4,7 +4,7 @@ import database.Database;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class ReflectionTest extends Database {
 
@@ -24,12 +24,17 @@ public class ReflectionTest extends Database {
     }
 
     @Override
-    protected List<Object> selectFromDatabase(Object _obj) {
+    protected ArrayList<Object> selectFromDatabase(Object _obj) {
         return null;
     }
 
     @Override
-    public int updateInsert(Object _table) { /* Do nothing */return 0;}
+    public long updateInsert(Object _table) { /* Do nothing */return 0;}
+
+    @Override
+    public void deactivate(Object _table) {
+        // do nothing
+    }
 
     @Test
     @DisplayName("Testing ability to read fields in a table class")
@@ -45,7 +50,6 @@ public class ReflectionTest extends Database {
         assert (columns.get("Number").getData().equals(42));
         assert (columns.get("someString").getData().equals("Test"));
         assert (columns.get("primaryKeyColumn").isPrimaryKey());
-
 
     }
 }
