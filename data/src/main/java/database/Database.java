@@ -1,12 +1,13 @@
 package database;
 /*
- * Last updated: 4/23/2021
+ * Last updated: 4/29/2021
  * This class represents an abstract database connection
  * Authors: Joshua Millikan
  */
 
 import annotations.Column;
 import annotations.Table;
+import errors.DatabaseError;
 
 import java.io.InvalidClassException;
 import java.lang.reflect.Field;
@@ -17,7 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public abstract class Database {
-    private static final ExecutorService pool = Executors.newSingleThreadExecutor();
+    private final ExecutorService pool = Executors.newSingleThreadExecutor();
 
     /**
      * Save a collection of objects to the database
@@ -25,9 +26,10 @@ public abstract class Database {
      * @param <T> object type
      */
     public final <T> void saveObjects(Collection<T> _objects) {
-            for(Object obj : _objects)
-                //pool.submit(()->
-                        updateInsert(obj);
+            for(Object obj : _objects) {
+                validate(obj);
+                pool.submit(() -> updateInsert(obj));
+            }
     }
 
     /**
@@ -47,6 +49,7 @@ public abstract class Database {
     public final <T> ArrayList<Future<ArrayList<T>>> loadObjects(Collection<T> _objs) {
         var ls = new ArrayList<Future<ArrayList<T>>>();
         for (T object : _objs) {
+            validate(object);
             var future = pool.submit(() -> selectFromDatabase(object));
             ls.add(future);
         }
@@ -59,10 +62,25 @@ public abstract class Database {
      * @return future that will contain the list of results
      */
     public final <T> Future<ArrayList<T>> loadObject(T _obj) {
+        validate(_obj);
         return pool.submit(() ->
                 selectFromDatabase(_obj));
     }
 
+    public final void delete(Object _obj) {
+        validate(_obj);
+        pool.submit(()-> deactivate(_obj));
+    }
+
+    public void shutdown() {
+        pool.shutdown();
+    }
+    /**
+     * Return the name of a @Table class
+     * @param annotated the class
+     * @return the table name in the annotation or the class name if the annotation was empty
+     * @throws InvalidClassException if the class is not actually annotated @Table
+     */
     protected static String nameFromAnnotation(Class<?> annotated) throws InvalidClassException {
         var annotation = annotated.getAnnotation(Table.class);
         if(annotation == null)
@@ -70,6 +88,12 @@ public abstract class Database {
         return annotation.name().equals("") ? annotated.getName() : annotation.name();
     }
 
+    /**
+     * Return the name of a @Column field
+     * @param annotated the field
+     * @return the field name in the annotation or the field name if the annotation was empty
+     * @throws InvalidClassException if the field is not actually annotated @Table
+     */
     protected static String nameFromAnnotation(Field annotated) throws InvalidClassException {
         var annotation = annotated.getAnnotation(Column.class);
         if(annotation == null)
@@ -95,7 +119,15 @@ public abstract class Database {
      * Deactivates a record corresponding to the object given
      * @param _table the object to disable the record for
      */
-    public abstract void deactivate(Object _table);
+    protected abstract void deactivate(Object _table);
+
+
+    /**
+     * drop a class's table from the database
+     * @param _c class to drop
+     * @throws InvalidClassException if class is not a table
+     */
+    public abstract void drop(Class<?> _c) throws InvalidClassException;
 
     /**
      * Reads a object as a table using reflection
@@ -135,6 +167,23 @@ public abstract class Database {
         return fieldMap;
     }
 
+    private void validate(Object _obj) {
+        if(_obj == null)
+            throw new DatabaseError("A input object was null!");
+        if(_obj.getClass().getAnnotation(Table.class) == null)
+            throw new DatabaseError("Class "+ _obj.getClass() +" is not a table!");
+        for(Field field : _obj.getClass().getDeclaredFields()) {
+            if(field.getAnnotation(Column.class) != null) {
+                if(!Object.class.isAssignableFrom(field.getType())) {
+                    try {
+                        throw new DatabaseError("Malformed column "+nameFromAnnotation(field)+" is of a invalid type: "+field.getType().getName());
+                    } catch (InvalidClassException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * This class holds data about a column in the table

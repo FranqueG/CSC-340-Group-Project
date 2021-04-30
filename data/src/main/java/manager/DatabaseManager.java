@@ -9,6 +9,7 @@ import database.Database;
 import database.sqlite.SqliteDatabase;
 
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -110,13 +111,29 @@ public final class DatabaseManager {
     }
 
     /**
-     * Work in progress
+     * Delete the matching records in the database
+     * Dose not actually remove anything, instead simply sets the active column to 0
      * @param _obj object to use as a filter to delete records
      */
     public static void deleteObject(Object _obj) {
-        database.deactivate(_obj);
+        database.delete(_obj);
+    }
+
+    public static void shutdownDatabase() {
+        database.shutdown();
+        database = null;
     }
 
     //This class is not meant to be instantiated
     private DatabaseManager() {throw new UnsupportedOperationException("This class should not be instantiated");}
+
+    public static void testClearDatabase(Class<?>... _classes) {
+        for(var c : _classes) {
+            try {
+                database.drop(c);
+            } catch (InvalidClassException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

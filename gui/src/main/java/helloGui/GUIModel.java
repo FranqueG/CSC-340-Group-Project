@@ -4,38 +4,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import manager.DatabaseManager;
 import shared.Card;
 import shared.Deck;
 
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import static helloApi.HelloApi.getCardTypes;
-import static helloApi.HelloApi.advancedSearch;
-import static helloGui.GUIController.clearCardTypeArray;
-
 import static helloGui.GUIController.*;
-import static manager.DatabaseManager.loadObject;
-import static manager.DatabaseManager.saveObject;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.concurrent.Future;
 
 public class GUIModel {
     @FXML
@@ -93,17 +73,24 @@ public class GUIModel {
 
     //ArrayList<Card> cards = new ArrayList<>();
 
+    public Deck Deck1 = new Deck(null, null, null,null);
+
     // these are dummy cards... Card1 is used to return null values...
     public Card Card1 = new Card("","Card1","","",1,"","","");
-    public Card Card2 = new Card("","Card2","","",1,"","","");
+    public Card Card2 = new Card(null,null,null,null,1,null,null,null);
 
 
     @FXML
     //initialize fills cardTypeCBox with types for the user to choose from.
     public void initialize() {
-        //DatabaseManager.loadObjects(decks);
-        ObservableList list = FXCollections.observableArrayList(DatabaseManager.loadObjects(decks));
-        deckDisplay.setItems(list);
+        try {
+            deckDisplay.setItems(FXCollections.observableList(DatabaseManager.loadObject(new Deck()).get()));
+            deckCBox.setItems(FXCollections.observableList(DatabaseManager.loadObject(new Deck()).get()));
+            deckToAddToBox.setItems(FXCollections.observableList(DatabaseManager.loadObject(new Deck()).get()));
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
         cardTypeCBox.setItems(FXCollections.observableList(allCardTypes));
     }
 
@@ -124,10 +111,9 @@ public class GUIModel {
 
     // addNewDeck creates a new deck and saves it to the database
     Integer deckId = 0;
-    public void addNewDeck(){
+    public void addNewDeck() throws ExecutionException, InterruptedException {
         Deck newDeck = new Deck(newDeckNameTxtField.getText(), ruleCBox.getValue(), ++deckId, null);
         decks.add(newDeck);
-        //DatabaseManager.saveObject(newDeck);
         DatabaseManager.saveObjects(decks);
         deckDisplay.getItems().add(newDeck);
         deckCBox.setItems(deckDisplay.getItems());
@@ -136,9 +122,10 @@ public class GUIModel {
     }
 
     // removeDeck removes an existing deck and updates the database
-    public void removeDeck(){
-
-        decks.remove(deckCBox.getValue());
+    public void removeDeck() throws ExecutionException, InterruptedException {
+        Deck currentDeck = deckCBox.getValue();
+        decks.remove(DatabaseManager.loadObject(currentDeck).get());
+        DatabaseManager.saveObjects(decks);
         deckDisplay.getItems().remove(deckCBox.getValue());
     }
 
@@ -193,9 +180,7 @@ public class GUIModel {
 
     // showNewSearchPic changes the card image displayed to the user
     public void showNewSearchPic() throws IOException {
-        String cardName = resultsListView.getSelectionModel().getSelectedItem().toString();
-        Card cardToShow = getCardFromSearchResults(cardName);
-        //Card cardToShow = (Card) resultsListView.getSelectionModel().getSelectedItem();
+        Card cardToShow = (Card) resultsListView.getSelectionModel().getSelectedItem();
         WritableImage wr = getWritableImageFromURL(cardToShow);
         SearchPic.setImage(wr);
         }
