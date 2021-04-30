@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public abstract class Database {
-    private static final ExecutorService pool = Executors.newSingleThreadExecutor();
+    private final ExecutorService pool = Executors.newSingleThreadExecutor();
 
     /**
      * Save a collection of objects to the database
@@ -72,6 +72,9 @@ public abstract class Database {
         pool.submit(()-> deactivate(_obj));
     }
 
+    public void shutdown() {
+        pool.shutdown();
+    }
     /**
      * Return the name of a @Table class
      * @param annotated the class

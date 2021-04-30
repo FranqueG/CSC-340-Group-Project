@@ -119,6 +119,11 @@ public final class DatabaseManager {
         database.delete(_obj);
     }
 
+    public static void shutdownDatabase() {
+        database.shutdown();
+        database = null;
+    }
+
     //This class is not meant to be instantiated
     private DatabaseManager() {throw new UnsupportedOperationException("This class should not be instantiated");}
 

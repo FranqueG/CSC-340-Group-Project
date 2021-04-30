@@ -14,6 +14,7 @@ public class DeckTest {
     @BeforeAll
     public static void setup() throws IOException {
         DatabaseManager.connectToDatabase();
+        DatabaseManager.testClearDatabase(Deck.class);
     }
 
 
@@ -28,6 +29,7 @@ public class DeckTest {
 
         var future = DatabaseManager.loadObject(new Deck()); // Load all decks
         var deckResult = future.get().get(0);
+
         assert (deck.toString().equals(deckResult.toString()));
 
         var results = deck.getCards();
