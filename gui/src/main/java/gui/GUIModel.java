@@ -155,7 +155,7 @@ public class GUIModel {
         for (int i = 0; i < x;i++){
             if (searchResultCards.get(i).toString().equals(cardName)){cardToAdd = searchResultCards.get(i); System.out.println("Found it!");}
         }
- 
+
         cards.add(cardToAdd);
         DatabaseManager.saveObject(currentDeck);
 
