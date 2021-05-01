@@ -110,7 +110,6 @@ public class ManagerTest {
         DatabaseManager.saveObject(table);
         DatabaseManager.deleteObject(table);
         var result = DatabaseManager.loadObject(table).get();
-        System.out.println(result);
         assert(result.size() == 0);
     }
 
