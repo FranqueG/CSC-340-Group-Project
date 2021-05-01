@@ -105,7 +105,7 @@ public final class DatabaseManager {
      * @return A array list of futures which will contain the list of objects for each returned
      * for each object passed as a parameter parameter once the operation is completes.
      */
-    @SafeVarargs//TODO make sure the varargs is a actually safe
+    @SafeVarargs
     public static <T>ArrayList<Future<ArrayList<T>>> loadObjects(final T... _objs) {
         return database.loadObjects(Arrays.asList(_objs));
     }

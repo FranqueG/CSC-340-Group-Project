@@ -149,8 +149,7 @@ public class SqliteDatabase extends Database {
                 String createString = "CREATE TABLE IF NOT EXISTS " + tableName + "_" + _owningName +
                         "_join_table (" +
                         "parent INTEGER NOT NULL," +
-                        " child INTEGER NOT NULL," +
-                        " count INTEGER )";
+                        " child INTEGER NOT NULL)";
                 statement.execute(createString);
 
                 //Clear existing join table
