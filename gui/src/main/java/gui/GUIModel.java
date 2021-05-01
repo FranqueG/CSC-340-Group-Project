@@ -113,7 +113,8 @@ public class GUIModel {
     }
 
     // addNewDeck creates a new deck and saves it to the database
-    public void addNewDeck() {
+    public void addNewDeck() throws ExecutionException, InterruptedException {
+        decks = DatabaseManager.loadObject(new Deck()).get();
         Deck newDeck = new Deck(newDeckNameTxtField.getText().trim(), ruleCBox.getValue(),null);
         for (var deck : decks) {
             if(deck.getDeckName().equals(newDeck.getDeckName())) {
