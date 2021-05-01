@@ -45,11 +45,13 @@ public class SqliteDatabase extends Database {
         if (annotation == null)
             throw new DatabaseError("Attempted to use class that is not a table!");
         try {
+            // get the search parameters
             Map<String, ColumnData> searchFields = new HashMap<>();
             for (var field : Database.getColumns(_obj).entrySet()) {
                 if (field.getValue().getData() != null)
                     searchFields.put(field.getKey(), field.getValue());
             }
+            // create the select statement
             var statement = this.connection.prepareStatement(createSelectString(annotation.name(), searchFields));
             int i = 0;
             for (var field : searchFields.values()) {
@@ -59,6 +61,7 @@ public class SqliteDatabase extends Database {
                     break;
                 }
             }
+            // execute the select statement
             ResultSet result = statement.executeQuery();
             return buildFromResults(result, (Class<T>) _obj.getClass());
         } catch (IllegalAccessException | SQLException e) {
@@ -248,6 +251,17 @@ public class SqliteDatabase extends Database {
         return ls;
     }
 
+    /**
+     * This function creates a list of objects from a database result in the case that a object
+     * stores a list of objects as a column field
+     * @param _parentTable the table name of the parent object
+     * @param _childName the name of the child objects stored in the list
+     * @param _parentId the row id of the parent table
+     * @param _listField the field that will contain a list
+     * @param <T> the type that the list will contain
+     * @return the list that should be set as the value for that list column in the object created from the database
+     * @throws SQLException if a statement was invalid
+     */
     private <T> ArrayList<T> buildListFromResults(String _parentTable, String _childName, long _parentId, Class<T> _listField) throws SQLException {
         var joinTableName = _childName + "_" + _parentTable + "_join_table";
         String query = "SELECT * FROM " + joinTableName + " INNER JOIN " + _childName + " ON " + _childName + ".rowid = " + joinTableName + ".child " + " WHERE parent=? ;";
