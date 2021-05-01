@@ -78,7 +78,7 @@ public class ManagerTest {
 
         //test updating behavior
         table.list.clear();
-        table.list.add(new TestListElement("bla",312));
+        table.list.add(new TestListElement("bla",12));
         DatabaseManager.saveObject(table);
 
         //confirm that the update has worked
