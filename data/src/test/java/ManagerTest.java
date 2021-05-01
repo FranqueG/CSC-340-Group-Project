@@ -2,6 +2,7 @@ import annotations.Column;
 import annotations.Table;
 import errors.DatabaseError;
 import manager.DatabaseManager;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +23,14 @@ public class ManagerTest {
     public static void setup() throws IOException {
         DatabaseManager.connectToDatabase();
         DatabaseManager.testClearDatabase(TestTable.class,TestListElement.class,BasicTable.class);
+    }
+
+    /**
+     * Cleans up the database
+     */
+    @AfterAll
+    public static void cleanup() {
+        DatabaseManager.shutdownDatabase();
     }
 
     /**
@@ -85,8 +94,9 @@ public class ManagerTest {
             table.list.add(new TestListElement("bla",i));
         DatabaseManager.saveObject(table);
         result = DatabaseManager.loadObject(searchTable).get().get(0);
-        System.out.println(result.list.size());
+        var secondCopy = DatabaseManager.loadObject(searchTable).get().get(0);
         assert (result.equals(table));
+        assert (result.equals(secondCopy));
     }
 
     /**

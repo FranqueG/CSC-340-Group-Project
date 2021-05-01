@@ -23,7 +23,6 @@ import java.util.Map;
 
 public class SqliteDatabase extends Database {
     private final Connection connection;
-    private static final Map<String, String> queryCache = new HashMap<>();
 
     /**
      * Opens a SQLite database connection
@@ -45,12 +44,19 @@ public class SqliteDatabase extends Database {
         if (annotation == null)
             throw new DatabaseError("Attempted to use class that is not a table!");
         try {
+
             // get the search parameters
             Map<String, ColumnData> searchFields = new HashMap<>();
+            // create the table if it doesn't already exist
+            String tableName = nameFromAnnotation(_obj.getClass());
+            String createSting = createTableString(tableName, searchFields);
+            Statement createStatement = this.connection.createStatement();
+            createStatement.execute(createSting);
             for (var field : Database.getColumns(_obj).entrySet()) {
                 if (field.getValue().getData() != null)
                     searchFields.put(field.getKey(), field.getValue());
             }
+
             // create the select statement
             var statement = this.connection.prepareStatement(createSelectString(annotation.name(), searchFields));
             int i = 0;
@@ -64,7 +70,7 @@ public class SqliteDatabase extends Database {
             // execute the select statement
             ResultSet result = statement.executeQuery();
             return buildFromResults(result, (Class<T>) _obj.getClass());
-        } catch (IllegalAccessException | SQLException e) {
+        } catch (IllegalAccessException | SQLException | InvalidClassException e) {
             throw new DatabaseError("Unable to read field from table object! cause: " + e.getMessage());
         }
     }
@@ -254,11 +260,12 @@ public class SqliteDatabase extends Database {
     /**
      * This function creates a list of objects from a database result in the case that a object
      * stores a list of objects as a column field
+     *
      * @param _parentTable the table name of the parent object
-     * @param _childName the name of the child objects stored in the list
-     * @param _parentId the row id of the parent table
-     * @param _listField the field that will contain a list
-     * @param <T> the type that the list will contain
+     * @param _childName   the name of the child objects stored in the list
+     * @param _parentId    the row id of the parent table
+     * @param _listField   the field that will contain a list
+     * @param <T>          the type that the list will contain
      * @return the list that should be set as the value for that list column in the object created from the database
      * @throws SQLException if a statement was invalid
      */
@@ -329,39 +336,34 @@ public class SqliteDatabase extends Database {
      * @throws SQLException if it fails to create the table
      */
     private static String createTableString(String _name, Map<String, ColumnData> _fields) throws SQLException {
-        if (queryCache.containsKey(_name))
-            return queryCache.get(_name);
-        else {
-            var builder = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
-                    .append(_name)
-                    .append(" (\n");
-            for (var field : _fields.entrySet()) {
-                var columnData = field.getValue();
-                if (!columnData.isList()) {
-                    builder.append(field.getKey())
-                            .append(" ")
-                            .append(convertToSqliteType(columnData.getType()))
-                            .append(" ");
-                    if (columnData.isNotNull())
-                        builder.append("NOT NULL ");
-                    if (columnData.isUnique())
-                        builder.append("UNIQUE ");
-                    if (columnData.isPrimaryKey())
-                        builder.append("PRIMARY KEY");
-                    builder.append(",\n");
-                }
+        var builder = new StringBuilder("CREATE TABLE IF NOT EXISTS ")
+                .append(_name)
+                .append(" (\n");
+        for (var field : _fields.entrySet()) {
+            var columnData = field.getValue();
+            if (!columnData.isList()) {
+                builder.append(field.getKey())
+                        .append(" ")
+                        .append(convertToSqliteType(columnData.getType()))
+                        .append(" ");
+                if (columnData.isNotNull())
+                    builder.append("NOT NULL ");
+                if (columnData.isUnique())
+                    builder.append("UNIQUE ");
+                if (columnData.isPrimaryKey())
+                    builder.append("PRIMARY KEY");
+                builder.append(",\n");
             }
-            builder.append("active INTEGER DEFAULT 1\n");
-            builder.append("); ");
-            var query = builder.toString();
-            queryCache.put(_name, query);
-            return query;
         }
+        builder.append("active INTEGER DEFAULT 1\n");
+        builder.append("); ");
+        return builder.toString();
     }
 
     /**
      * deletes a record from the database. Originally set active=0,
      * but there were issues with that so it just deletes it now.
+     *
      * @param _table the object to delete the record for
      */
     @Override
