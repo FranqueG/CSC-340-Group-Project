@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public abstract class Database {
-    private final ExecutorService pool = Executors.newSingleThreadExecutor();
+    private static final ExecutorService pool = Executors.newSingleThreadExecutor();
 
     /**
      * Save a collection of objects to the database
