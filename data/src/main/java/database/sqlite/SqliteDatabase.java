@@ -44,12 +44,19 @@ public class SqliteDatabase extends Database {
         if (annotation == null)
             throw new DatabaseError("Attempted to use class that is not a table!");
         try {
+
             // get the search parameters
             Map<String, ColumnData> searchFields = new HashMap<>();
+            // create the table if it doesn't already exist
+            String tableName = nameFromAnnotation(_obj.getClass());
+            String createSting = createTableString(tableName, searchFields);
+            Statement createStatement = this.connection.createStatement();
+            createStatement.execute(createSting);
             for (var field : Database.getColumns(_obj).entrySet()) {
                 if (field.getValue().getData() != null)
                     searchFields.put(field.getKey(), field.getValue());
             }
+
             // create the select statement
             var statement = this.connection.prepareStatement(createSelectString(annotation.name(), searchFields));
             int i = 0;
@@ -63,7 +70,7 @@ public class SqliteDatabase extends Database {
             // execute the select statement
             ResultSet result = statement.executeQuery();
             return buildFromResults(result, (Class<T>) _obj.getClass());
-        } catch (IllegalAccessException | SQLException e) {
+        } catch (IllegalAccessException | SQLException | InvalidClassException e) {
             throw new DatabaseError("Unable to read field from table object! cause: " + e.getMessage());
         }
     }

@@ -94,8 +94,9 @@ public class ManagerTest {
             table.list.add(new TestListElement("bla",i));
         DatabaseManager.saveObject(table);
         result = DatabaseManager.loadObject(searchTable).get().get(0);
-        System.out.println(result.list.size());
+        var secondCopy = DatabaseManager.loadObject(searchTable).get().get(0);
         assert (result.equals(table));
+        assert (result.equals(secondCopy));
     }
 
     /**
